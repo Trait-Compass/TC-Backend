@@ -28,6 +28,7 @@ export class HttpErrorFilter implements ExceptionFilter {
       .status(exception.statusCode)
       .json(
         new FailResponse(
+            request.url,
           exception.responseCode,
           exception.errorMessage,
           request.id,

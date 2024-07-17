@@ -14,6 +14,7 @@ export class EntityNotFoundErrorFilter implements ExceptionFilter {
       .status(404)
       .json(
         new FailResponse(
+            request.url,
           'RESOURCE_NOT_FOUND',
           '요청한 리소스를 찾을 수 없습니다.',
           request.id,

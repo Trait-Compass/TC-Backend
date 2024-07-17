@@ -15,6 +15,7 @@ export class CatchAllFilter implements ExceptionFilter {
         .status(500)
         .json(
           new FailResponse(
+              request.url,
             'TIMEOUT',
             '요청이 시간 초과되었습니다. 잠시 후 다시 시도해주세요.',
             request.id,
@@ -25,6 +26,7 @@ export class CatchAllFilter implements ExceptionFilter {
         .status(500)
         .json(
           new FailResponse(
+              request.url,
             'UNKNOWN',
             '처리되지 않은 오류가 발생하였습니다.',
             request.id,
