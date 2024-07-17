@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import {FilterModule} from "./filter/filter.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
           entities: [],
           synchronize: true,
       }),
+      FilterModule,
   ],
   controllers: [AppController],
   providers: [AppService],
