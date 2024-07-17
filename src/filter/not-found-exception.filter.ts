@@ -17,6 +17,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
       .status(404)
       .json(
         new FailResponse(
+            request.url,
           'PATH_NOT_FOUND',
           '존재하지 않는 접근 경로입니다.',
           request.id,

@@ -33,6 +33,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       .status(exception.getStatus())
       .json(
         new FailResponse(
+            request.url,
           exception.name.toUpperCase().split(' ').join('_'),
           exception.message,
           request.id,

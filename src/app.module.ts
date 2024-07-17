@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {FilterModule} from "./filter/filter.module";
+import {UserEntity} from "./modules/user/entity/user.entity";
+import {UserController} from "./modules/user/controller/user.controller";
+import {UserModule} from "./modules/user/user.module";
 
 @Module({
   imports: [
@@ -21,12 +24,17 @@ import {FilterModule} from "./filter/filter.module";
           username: process.env.DB_USERNAME,
           password: process.env.DB_PASSWORD,
           database: process.env.DB_DATABASE,
-          entities: [],
+          entities: [
+              UserEntity
+          ],
           synchronize: true,
       }),
       FilterModule,
+      UserModule
   ],
-  controllers: [AppController],
+  controllers: [
+      AppController
+  ],
   providers: [AppService],
 })
 export class AppModule {}

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
-import { Observable, tap } from 'rxjs';
+import {map, Observable, tap} from 'rxjs';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -18,7 +18,6 @@ export class LoggingInterceptor implements NestInterceptor {
     if (context.switchToHttp().getRequest<Request>().url === '/health')
       return next.handle();
     const req = context.switchToHttp().getRequest<Request>();
-    const res = context.switchToHttp().getResponse<Response>();
     const id = randomUUID();
     const time = Date.now();
     const { body } = req;
@@ -36,8 +35,8 @@ export class LoggingInterceptor implements NestInterceptor {
     req.id = id;
 
     return next.handle().pipe(
-      tap((v) => {
-        const response = context.switchToHttp().getResponse();
+      map((v) => {
+        const res = context.switchToHttp().getResponse();
         console.log({
           level: 'res info',
           traceId: id,
@@ -50,6 +49,14 @@ export class LoggingInterceptor implements NestInterceptor {
           request: body,
           response: v
         });
+
+        res.json({
+          status: true,
+          path: req.url,
+          statusCode: res.statusCode,
+          result: v,
+        });
+
       }),
     );
   }

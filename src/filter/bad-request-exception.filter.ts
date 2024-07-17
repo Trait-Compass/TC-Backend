@@ -16,6 +16,6 @@ export class BadRequestExceptionFilter implements ExceptionFilter {
 
     response
       .status(400)
-      .json(new FailResponse('BAD_REQUEST', exception.message, request.id));
+      .json(new FailResponse(request.url,'BAD_REQUEST', exception.message, request.id));
   }
 }
