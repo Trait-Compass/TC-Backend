@@ -174,4 +174,4 @@ Temporary Items
 
 *.zip
 
-.env
+*.env
