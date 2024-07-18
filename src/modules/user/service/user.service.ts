@@ -4,22 +4,44 @@ import {UserEntity} from "../entity/user.entity";
 import {Repository} from "typeorm";
 import {SignupRequest} from "../dto/request/signup.request";
 import {SignupResponse} from "../dto/response/signup.response";
+import {LoginRequest} from "../dto/request/login.request";
+import {AuthService} from "../../auth/service/auth.service";
+import {GENDER} from "../../../common/enums";
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>
+        private readonly userRepository: Repository<UserEntity>,
+        private readonly authService: AuthService
     ) {}
+
+    async login(loginRequest: LoginRequest) : Promise<string> {
+        const user = await this.userRepository.findOne({ where : {tcId: loginRequest.id}});
+        if(user){
+            if(user.password != loginRequest.password)
+                throw new BadRequestException("비밀번호가 틀렸습니다");
+        } else {
+            throw new BadRequestException("존재하지 않는 아이디 혹은 이메일입니다");
+        }
+
+        return await this.authService.createJwt(user.role,user.id);
+
+    }
 
     async signup(signup:SignupRequest) : Promise<SignupResponse> {
         if(await this.checkId(signup.id)){
-            throw new BadRequestException('중복된 아이디 입니다');
+            throw new BadRequestException('중복된 아이디입니다');
         }
 
         if(await this.checkNickname(signup.nickname)){
-            throw new BadRequestException('중복된 닉네임 입니다');
+            throw new BadRequestException('중복된 닉네임입니다');
         }
+
+        if (!(signup.gender in GENDER)) {
+            throw new BadRequestException('잘못된 성별입니다');
+        }
+
         const entity = await this.userRepository.save(
             {tcId: signup.id, nickname: signup.nickname, password: signup.password, mbti: signup.mbti, gender : signup.gender}
         );
