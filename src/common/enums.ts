@@ -16,3 +16,13 @@ export enum MBTI {
     ENFJ = "ENFJ",
     ENTJ = "ENTJ"
 }
+
+export enum ROLE {
+    USER = "USER",
+    ADMIN = "ADMIN"
+}
+
+export enum GENDER {
+    M = "M",
+    W = "W"
+}
