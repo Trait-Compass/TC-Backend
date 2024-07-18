@@ -7,6 +7,7 @@ import {FilterModule} from "./filter/filter.module";
 import {UserEntity} from "./modules/user/entity/user.entity";
 import {UserController} from "./modules/user/controller/user.controller";
 import {UserModule} from "./modules/user/user.module";
+import {AuthModule} from "./modules/auth/auth.module";
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import {UserModule} from "./modules/user/user.module";
           synchronize: true,
       }),
       FilterModule,
-      UserModule
+      UserModule,
+      AuthModule
   ],
   controllers: [
       AppController
