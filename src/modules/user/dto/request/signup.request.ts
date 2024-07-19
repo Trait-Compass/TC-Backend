@@ -21,7 +21,7 @@ export class SignupRequest {
 
     @ApiProperty({
         description: '닉네임',
-        example: '여행가',
+        example: 'traveler',
     })
     @IsNotEmpty()
     @IsString()
