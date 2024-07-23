@@ -5,7 +5,6 @@ import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {FilterModule} from "./filter/filter.module";
 import {UserEntity} from "./modules/user/entity/user.entity";
-import {UserController} from "./modules/user/controller/user.controller";
 import {UserModule} from "./modules/user/user.module";
 import {AuthModule} from "./modules/auth/auth.module";
 
@@ -13,10 +12,7 @@ import {AuthModule} from "./modules/auth/auth.module";
   imports: [
       ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath:
-              process.env.NODE_ENV === 'prod'
-                  ? '.prod.env'
-                  : '.local.env',
+          envFilePath: process.env.NODE_ENV !== 'prod' ? '.local.env' : undefined
       }),
       TypeOrmModule.forRoot({
           type: 'mysql',
@@ -28,15 +24,13 @@ import {AuthModule} from "./modules/auth/auth.module";
           entities: [
               UserEntity
           ],
-          synchronize: true,
+          synchronize: Boolean(process.env.DB_SYNCHRONIZE),
       }),
       FilterModule,
       UserModule,
       AuthModule
   ],
-  controllers: [
-      AppController
-  ],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
