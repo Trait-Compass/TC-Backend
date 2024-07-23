@@ -1,4 +1,4 @@
-version: "1.0.0"
+version: '3.7'
 services:
   tc_api:
     build:
@@ -8,6 +8,8 @@ services:
       - "3000:3000"
     volumes:
       - ./src:/var/app/src
+    env_file:
+      - .env
   mysql_db:
     image: mysql
     ports:
@@ -16,4 +18,6 @@ services:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_DATABASE}
       - MYSQL_TCP_PORT=${DB_PORT}
+    env_file:
+      - .env
 
