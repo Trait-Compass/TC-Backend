@@ -12,7 +12,9 @@ import {AuthModule} from "./modules/auth/auth.module";
   imports: [
       ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath: process.env.NODE_ENV !== 'prod' ? '.local.env' : undefined
+          envFilePath: process.env.NODE_ENV === 'prod' ? '.prod.env'
+              : process.env.NODE_ENV === 'local' ? '.local.env'
+                  : undefined
       }),
       TypeOrmModule.forRoot({
           type: 'mysql',
