@@ -12,12 +12,7 @@ export class CourseService {
 
     async getFestival(): Promise<PhotoDto[]> {
         const mappedCodeList = await this.getRandomCodeMappings();
-        const dataArrays = await Promise.all(
-            Object.entries(mappedCodeList).map(async ([key, value]) => {
-                return await this.photoService.getFestivalPhotoList(key, value);
-            })
-        );
-        return dataArrays.flat();
+        return await this.photoService.getFestivalPhotoList();
     }
 
     async getSimpleCourse(simpleCourseRequest: SimpleCourseRequest): Promise<PhotoDto[]> {
@@ -28,27 +23,20 @@ export class CourseService {
         return dataArrays.flat();
     }
 
-    async getMappedCitiesAndCategories(): Promise<Record<Cities | Counties, Category>> {
+    async getMappedCitiesAndCategories(): Promise<Record<Cities , Category>> {
         const cityKeys = Object.keys(Cities) as Array<keyof typeof Cities>;
         const countyKeys = Object.keys(Counties) as Array<keyof typeof Counties>;
         const categories = Object.keys(Category) as Array<keyof typeof Category>;
 
         const randomCities = await this.getRandomUniqueElements(cityKeys, 2);
-        const randomCounties = await this.getRandomUniqueElements(countyKeys, 2);
         const randomCategories1 = await this.getRandomElements(categories, 2);
-        const randomCategories2 = await this.getRandomElements(categories, 2);
 
         const cityMap = randomCities.reduce((acc, city, index) => {
             acc[Cities[city]] = Category[randomCategories1[index]];
             return acc;
         }, {} as Record<Cities, Category>);
 
-        const countyMap = randomCounties.reduce((acc, county, index) => {
-            acc[Counties[county]] = Category[randomCategories2[index]];
-            return acc;
-        }, {} as Record<Counties, Category>);
-
-        return { ...cityMap, ...countyMap };
+        return cityMap;
     }
 
 
