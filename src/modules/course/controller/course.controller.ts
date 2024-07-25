@@ -18,6 +18,11 @@ export class CourseController {
         return await this.courseService.getSimpleCourse(simpleCourseRequest);
     }
 
+    @Get('/best')
+    async getBestCourse(): Promise<PhotoDto[]> {
+        return await this.courseService.getBestCourse();
+    }
+
     @Get('/festival')
     async getFestival(): Promise<PhotoDto[]> {
         return await this.courseService.getFestival();
