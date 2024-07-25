@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {SimpleCourseRequest} from "../dto/request/simpleCourse.request";
-import {Category, Cities, cityMapping, Counties, countyMapping} from "../../../common/enums";
+import {Category, Cities, cityMapping, Counties, countyMapping, MBTI} from "../../../common/enums";
 import {PhotoService} from "../../photo/course/service/photo.service";
 import {PhotoDto} from "../../photo/course/dto/photo.dto";
 
@@ -13,6 +13,16 @@ export class CourseService {
     async getFestival(): Promise<PhotoDto[]> {
         const mappedCodeList = await this.getRandomCodeMappings();
         return await this.photoService.getFestivalPhotoList();
+    }
+    // TODO 로직 적용
+    async getBestCourse(): Promise<PhotoDto[]> {
+        const mappedCityCategoryList = await this.getMappedCitiesAndCategories();
+        const dataArrays = await Promise.all(Object.entries(mappedCityCategoryList).map(async ([city, category]) => {
+            const photo = await this.photoService.getPhotoList(city as string, category as string);
+            photo.mbti = await this.getRandomMBTI() as string;
+            return photo;
+        }));
+        return dataArrays.flat();
     }
 
     async getSimpleCourse(simpleCourseRequest: SimpleCourseRequest): Promise<PhotoDto[]> {
@@ -28,8 +38,8 @@ export class CourseService {
         const countyKeys = Object.keys(Counties) as Array<keyof typeof Counties>;
         const categories = Object.keys(Category) as Array<keyof typeof Category>;
 
-        const randomCities = await this.getRandomUniqueElements(cityKeys, 2);
-        const randomCategories1 = await this.getRandomElements(categories, 2);
+        const randomCities = await this.getRandomUniqueElements(cityKeys, 4);
+        const randomCategories1 = await this.getRandomElements(categories, 4);
 
         const cityMap = randomCities.reduce((acc, city, index) => {
             acc[Cities[city]] = Category[randomCategories1[index]];
@@ -83,6 +93,12 @@ export class CourseService {
         });
 
         return result;
+    }
+
+    async getRandomMBTI(): Promise<MBTI> {
+        const mbtiValues = Object.values(MBTI);
+        const randomIndex = Math.floor(Math.random() * mbtiValues.length);
+        return mbtiValues[randomIndex];
     }
 
 }
