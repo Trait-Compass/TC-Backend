@@ -1,7 +1,6 @@
-import { Injectable, HttpException } from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import axios from 'axios';
 import {PhotoDto} from "../dto/photo.dto";
-import {Category, Cities} from "../../../../common/enums";
 import {getCurrentDate} from "../../../../util/date.util";
 
 
@@ -56,12 +55,12 @@ export class PhotoService {
         return { city, title : selectedItem.title, image : selectedItem.firstimage };
     }
 
-    async getFestivalPhotoList(area: string, code: string): Promise<PhotoDto> {
+    async getFestivalPhotoList(): Promise<PhotoDto[]> {
         let response;
         try {
             response = await axios.get(this.festivalApiUrl, {
                 params: {
-                    numOfRows: '10',
+                    numOfRows: '8',
                     pageNo: '0',
                     MobileOS: 'IOS',
                     MobileApp: 'tc',
@@ -69,7 +68,6 @@ export class PhotoService {
                     listYN: 'Y',
                     eventStartDate: getCurrentDate(),
                     areaCode: '36',
-                    sigunguCode: code,
                     serviceKey: this.serviceKey,
                 },
             });
@@ -84,19 +82,8 @@ export class PhotoService {
         if (!items || items.length === 0) {
             throw new HttpException('No festival found', 404);
         }
-
-        let selectedItem = null;
-        for (const item of items) {
-            if (item.firstimage) {
-                selectedItem = item;
-                break;
-            }
-        }
-
-        if (!selectedItem) {
-            throw new HttpException('No image found', 404);
-        }
-
-        return { city : area, title : selectedItem.title, image : selectedItem.firstimage };
+        return  items.map((item: { addr: any; title: any; firstimage: any; }) => {
+            return {city: item.addr, title: item.title, image: item.firstimage};
+        });
     }
 }
