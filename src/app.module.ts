@@ -7,6 +7,7 @@ import {FilterModule} from "./filter/filter.module";
 import {UserEntity} from "./modules/user/entity/user.entity";
 import {UserModule} from "./modules/user/user.module";
 import {AuthModule} from "./modules/auth/auth.module";
+import {CourseModule} from "./modules/course/course.module";
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import {AuthModule} from "./modules/auth/auth.module";
       }),
       FilterModule,
       UserModule,
-      AuthModule
+      AuthModule,
+      CourseModule
   ],
   controllers: [AppController],
   providers: [AppService],
