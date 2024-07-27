@@ -1,7 +1,7 @@
 import {Body, Controller, Get, HttpStatus, Post, Query, ValidationPipe} from '@nestjs/common';
 import {ApiTags} from "@nestjs/swagger";
 import {CourseService} from "../service/course.service";
-import {SimpleCourseRequest} from "../dto/request/simpleCourse.request";
+import {SimpleCourseQuery} from "../query/simpleCourse.query";
 import {PhotoDto} from "../../photo/course/dto/photo.dto";
 
 @Controller('/course')
@@ -13,9 +13,9 @@ export class CourseController {
 
     @Get('/simple')
     async getSimpleCourse(
-        @Query() simpleCourseRequest: SimpleCourseRequest
+        @Query() simpleCourseQuery: SimpleCourseQuery
     ): Promise<PhotoDto[]> {
-        return await this.courseService.getSimpleCourse(simpleCourseRequest);
+        return await this.courseService.getSimpleCourse(simpleCourseQuery);
     }
 
     @Get('/best')

@@ -1,7 +1,7 @@
 import {ApiProperty} from "@nestjs/swagger";
 import {IsDateString, IsNotEmpty, IsString} from "class-validator";
 
-export class SimpleCourseRequest {
+export class SimpleCourseQuery {
     @ApiProperty({
         description: '선택한 mbti',
         example: 'ENFP',

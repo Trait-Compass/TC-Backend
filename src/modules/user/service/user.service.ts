@@ -29,7 +29,7 @@ export class UserService {
 
     }
 
-    async signup(signup:SignupRequest) : Promise<SignupResponse> {
+    async createUser(signup:SignupRequest) : Promise<SignupResponse> {
         if(await this.checkId(signup.id)){
             throw new BadRequestException('중복된 아이디입니다');
         }
