@@ -6,8 +6,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import {FilterModule} from "./filter/filter.module";
 import {UserEntity} from "./modules/user/entity/user.entity";
 import {UserModule} from "./modules/user/user.module";
-import {AuthModule} from "./modules/auth/auth.module";
 import {CourseModule} from "./modules/course/course.module";
+import {AuthModule} from "./modules/auth/auth.module";
 
 @Module({
   imports: [

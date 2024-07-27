@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {IsNotEmpty, IsString} from 'class-validator';
+import {IsBoolean, IsNotEmpty, IsOptional, IsString} from 'class-validator';
 import {MBTI} from "../../../../common/enums";
+import {IsNull} from "typeorm";
+import {IsPasswordValid} from "../../../../decorator/valid.decorator";
 
 export class SignupRequest {
     @ApiProperty({
@@ -15,7 +17,7 @@ export class SignupRequest {
         description: '패스워드',
         example: 'traitcompass1!',
     })
-    @IsNotEmpty()
+    @IsPasswordValid()
     @IsString()
     password: string;
 
@@ -42,5 +44,12 @@ export class SignupRequest {
     @IsNotEmpty()
     @IsString()
     gender: string;
+
+    @ApiProperty({
+        description: '카카오 회원가입 확인',
+        example: 'true or false',
+    })
+    @IsBoolean()
+    isOauth: boolean;
 
 }

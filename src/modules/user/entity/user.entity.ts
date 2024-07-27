@@ -27,5 +27,8 @@ export class UserEntity {
     @UpdateDateColumn({nullable: false})
     updatedAt: string;
 
+    @Column({nullable : false, default : false})
+    isOauth: boolean;
+
 
 }

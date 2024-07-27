@@ -1,4 +1,5 @@
 export enum MBTI {
+    EMPTY = "EMPTY",
     ISTJ = "ISTJ",
     ISFJ = "ISFJ",
     INFJ = "INFJ",
