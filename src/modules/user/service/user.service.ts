@@ -5,15 +5,15 @@ import {Repository} from "typeorm";
 import {SignupRequest} from "../dto/request/signup.request";
 import {SignupResponse} from "../dto/response/signup.response";
 import {LoginRequest} from "../dto/request/login.request";
-import {AuthService} from "../../auth/service/auth.service";
 import {GENDER} from "../../../common/enums";
+import {AuthService} from "../../auth/service/auth.service";
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
-        private readonly authService: AuthService
+        private readonly jwtService: AuthService
     ) {}
 
     async login(loginRequest: LoginRequest) : Promise<string> {
@@ -25,7 +25,7 @@ export class UserService {
             throw new BadRequestException("존재하지 않는 아이디 혹은 이메일입니다");
         }
 
-        return await this.authService.createJwt(user.role,user.id);
+        return await this.jwtService.createJwt(user.role,user.id);
 
     }
 
@@ -60,4 +60,9 @@ export class UserService {
         const user = await this.userRepository.findOne({ where: { nickname } });
         return !!user;
     }
+
+    async findByTcId(tcId : string){
+        return await this.userRepository.findOne({ where: { tcId } });
+    }
+
 }
