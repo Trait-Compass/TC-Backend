@@ -1,5 +1,5 @@
 import {Body, Controller, Post} from '@nestjs/common';
-import {ApiTags} from "@nestjs/swagger";
+import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import {OauthUserService} from "../service/oauth.user.service";
 import {OauthLoginRequest} from "../dto/request/oauth.login.request";
 
@@ -10,6 +10,7 @@ export class OauthUserController {
         private readonly oauthService: OauthUserService
     ){}
 
+    @ApiOperation({summary : '카카오 콜백 API', description : '발급된 카카오 엑세스 토큰을 받아 로그인 및 회원가입' })
     @Post('/kakao')
     async login(
         @Body() oauthLoginRequest : OauthLoginRequest,

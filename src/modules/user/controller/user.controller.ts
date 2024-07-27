@@ -1,5 +1,5 @@
 import {Body, Controller, Get, Param, Post, Query, ValidationPipe} from '@nestjs/common';
-import {ApiTags} from "@nestjs/swagger";
+import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import {UserService} from "../service/user.service";
 import {SignupRequest} from "../dto/request/signup.request";
 import {SignupResponse} from "../dto/response/signup.response";
@@ -16,6 +16,7 @@ export class UserController {
         private readonly userService: UserService
     ){}
 
+    @ApiOperation({summary : '회원 가입 API' })
     @Post()
     async createUser(
         @Body(new ValidationPipe()) signupRequest: SignupRequest,
@@ -24,6 +25,7 @@ export class UserController {
         return { id : user.id, nickname : user.nickname };
     }
 
+    @ApiOperation({summary : '로그인 API'})
     @Post('/login')
     async login(
         @Body(new ValidationPipe()) loginRequest: LoginRequest,
@@ -32,18 +34,21 @@ export class UserController {
         return { accessToken : jwt };
     }
 
+    @ApiOperation({summary : 'ID 중복 검사 API' })
     @Get('/id/:id')
     async checkId(
         @Param()
-        @Query() checkIdQuery: CheckIdQuery
+        checkIdQuery: CheckIdQuery
     ): Promise<boolean> {
         return await this.userService.checkId(checkIdQuery.id);
 
     }
 
+    @ApiOperation({summary : '닉네임 중복  검사 API' })
     @Get('/nickname/:nickname')
     async checkNickname(
-        @Query() checkNicknameQuery: CheckNicknameQuery
+        @Param()
+        checkNicknameQuery: CheckNicknameQuery
     ): Promise<boolean> {
         return await this.userService.checkNickname(checkNicknameQuery.nickname);
     }

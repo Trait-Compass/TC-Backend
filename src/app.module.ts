@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {FilterModule} from "./filter/filter.module";
@@ -8,6 +6,7 @@ import {UserEntity} from "./modules/user/entity/user.entity";
 import {UserModule} from "./modules/user/user.module";
 import {CourseModule} from "./modules/course/course.module";
 import {AuthModule} from "./modules/auth/auth.module";
+import {AppController} from "./app.controller";
 
 @Module({
   imports: [
@@ -33,6 +32,6 @@ import {AuthModule} from "./modules/auth/auth.module";
       CourseModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}
