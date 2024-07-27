@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {SimpleCourseRequest} from "../dto/request/simpleCourse.request";
+import {SimpleCourseQuery} from "../query/simpleCourse.query";
 import {Category, Cities, cityMapping, Counties, countyMapping, MBTI} from "../../../common/enums";
 import {PhotoService} from "../../photo/course/service/photo.service";
 import {PhotoDto} from "../../photo/course/dto/photo.dto";
@@ -25,7 +25,7 @@ export class CourseService {
         return dataArrays.flat();
     }
 
-    async getSimpleCourse(simpleCourseRequest: SimpleCourseRequest): Promise<PhotoDto[]> {
+    async getSimpleCourse(simpleCourseQuery: SimpleCourseQuery): Promise<PhotoDto[]> {
         const mappedCityCategoryList = await this.getMappedCitiesAndCategories();
         const dataArrays = await Promise.all(Object.entries(mappedCityCategoryList).map(async ([city, category]) => {
             return await this.photoService.getPhotoList(city as string, category as string);

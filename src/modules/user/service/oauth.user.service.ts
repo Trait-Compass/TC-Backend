@@ -39,7 +39,7 @@ export class OauthUserService {
         const user = await this.userService.findByTcId(kakaoUser.data.id);
 
         if (!user) {
-            const newUser = await this.userService.signup({
+            const newUser = await this.userService.createUser({
                 id: kakaoUser.data.id,
                 password: "",
                 gender: kakaoUser.data.gender,
