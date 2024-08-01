@@ -1,15 +1,20 @@
 import {
   CallHandler,
-  ExecutionContext,
+  ExecutionContext, Inject,
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 import { map, Observable, tap } from 'rxjs';
+import { Logger } from 'winston';
+import {API_LOGGER} from "../modules/winston/provider/api-logger.provider";
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
+  constructor(
+      @Inject(API_LOGGER) private readonly logger: Logger,
+  ) {}
 
   intercept(
       context: ExecutionContext,
@@ -25,8 +30,8 @@ export class LoggingInterceptor implements NestInterceptor {
     const time = Date.now();
     const { body } = req;
 
-    console.log({
-      level: 'req info',
+    this.logger.log({
+      level: 'info',
       traceId: id,
       method: req.method,
       url: req.url.slice(0, 200),
@@ -39,8 +44,8 @@ export class LoggingInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
         tap((v) => {
-          console.log({
-            level: 'res info',
+          this.logger.log({
+            level: 'info',
             traceId: id,
             statusCode: res.statusCode,
             method: req.method,
