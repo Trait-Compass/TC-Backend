@@ -1,9 +1,14 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Inject } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { FailResponse } from '../common/dto/fail-response-body.response';
+import {API_LOGGER} from "../modules/winston/provider/api-logger.provider";
+import {Logger} from "winston";
 
 @Catch()
 export class CatchAllFilter implements ExceptionFilter {
+  constructor(
+      @Inject(API_LOGGER) private readonly logger: Logger,
+  ) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -35,7 +40,7 @@ export class CatchAllFilter implements ExceptionFilter {
     }
 
     if (exception instanceof Error) {
-      console.log({
+      this.logger.log({
         level: 'error',
         statusCode: 500,
         authorization: request.headers.authorization,
@@ -46,7 +51,7 @@ export class CatchAllFilter implements ExceptionFilter {
         stack: exception.stack,
       });
     } else {
-      console.log({
+      this.logger.log({
         level: 'error',
         hospitalId: request.headers.hospitalId,
         statusCode: 500,
