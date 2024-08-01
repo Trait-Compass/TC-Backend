@@ -7,6 +7,11 @@ import {UserModule} from "./modules/user/user.module";
 import {CourseModule} from "./modules/course/course.module";
 import {AuthModule} from "./modules/auth/auth.module";
 import {AppController} from "./app.controller";
+import {DataModule} from "./modules/data/data.module";
+import {WinstonModule} from "./modules/winston/winston.module";
+import {AwsModule} from "./aws/aws.module";
+import {LoggingInterceptor} from "./interceptor/logging.interceptor";
+import {APP_INTERCEPTOR} from "@nestjs/core";
 
 @Module({
   imports: [
@@ -29,9 +34,15 @@ import {AppController} from "./app.controller";
       FilterModule,
       UserModule,
       AuthModule,
-      CourseModule
+      CourseModule,
+      DataModule,
+      WinstonModule,
+      AwsModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers:[{
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+  }],
 })
 export class AppModule {}
