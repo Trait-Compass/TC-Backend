@@ -1,5 +1,6 @@
 import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
-import {MBTI, ROLE} from "../../../common/enums";
+import {GENDER, MBTI, ROLE} from "../../../common/enums";
+import {Get} from "@nestjs/common";
 
 @Entity()
 export class UserEntity {
@@ -12,13 +13,16 @@ export class UserEntity {
     @Column({nullable: false})
     password: string;
 
-    @Column({ type : 'enum', enum : MBTI, nullable: false})
+    @Column({ type : 'enum', enum : MBTI})
     mbti: MBTI;
 
     @Column()
     nickname: string;
 
-    @Column({ type : 'enum', enum : ROLE, default: ROLE.USER, nullable: false})
+    @Column({ type : 'enum', enum : GENDER, nullable: true})
+    gender: string;
+
+    @Column({ type : 'enum', enum : ROLE, default: ROLE.USER})
     role: string;
 
     @CreateDateColumn({nullable: false})

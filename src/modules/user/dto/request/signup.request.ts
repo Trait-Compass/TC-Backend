@@ -41,9 +41,9 @@ export class SignupRequest {
         description: '성별 M or W',
         example: 'M',
     })
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
-    gender: string;
+    gender?: string;
 
     @ApiProperty({
         description: '카카오 회원가입 확인',

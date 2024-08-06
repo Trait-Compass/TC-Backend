@@ -42,7 +42,6 @@ export class OauthUserService {
             const newUser = await this.userService.signup({
                 id: kakaoUser.data.id,
                 password: "",
-                gender: kakaoUser.data.gender,
                 isOauth: true,
                 nickname: kakaoUser.data.nickname,
                 mbti: MBTI.EMPTY
