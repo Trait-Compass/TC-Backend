@@ -85,5 +85,5 @@ export enum ROLE {
 
 export enum GENDER {
     M = "M",
-    W = "W"
+    F = "F"
 }
