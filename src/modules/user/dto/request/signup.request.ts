@@ -46,8 +46,8 @@ export class SignupRequest {
     gender?: string;
 
     @ApiProperty({
-        description: '카카오 회원가입 확인',
-        example: 'true or false',
+        description: '카카오 회원 여부',
+        example: 'false',
     })
     @IsBoolean()
     isOauth: boolean;
