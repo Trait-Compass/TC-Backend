@@ -39,7 +39,7 @@ export class UserService {
         }
 
         const entity = await this.userRepository.save(
-            {tcId: signup.id, nickname: signup.nickname, password: signup.password, mbti: signup.mbti, gender : signup.gender}
+            {tcId: signup.id, nickname: signup.nickname, password: signup.password, mbti: signup.mbti, gender : signup.gender, isOauth: signup.isOauth}
         );
 
         return {
