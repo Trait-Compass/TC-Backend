@@ -38,8 +38,8 @@ export class SignupRequest {
     mbti: MBTI;
 
     @ApiProperty({
-        description: '성별 M or W',
-        example: 'M',
+        description: '성별 M or F',
+        example: 'F',
     })
     @IsOptional()
     @IsString()
