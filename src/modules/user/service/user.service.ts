@@ -38,10 +38,6 @@ export class UserService {
             throw new BadRequestException('중복된 닉네임입니다');
         }
 
-        if (!(signup.gender in GENDER)) {
-            throw new BadRequestException('잘못된 성별입니다');
-        }
-
         const entity = await this.userRepository.save(
             {tcId: signup.id, nickname: signup.nickname, password: signup.password, mbti: signup.mbti, gender : signup.gender}
         );
