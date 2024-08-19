@@ -40,10 +40,10 @@ export class OauthUserService {
 
         if (!user) {
             const newUser = await this.userService.createUser({
-                id: kakaoUser.data.id,
+                id: kakaoUser.data.account_email,
                 password: "",
                 isOauth: true,
-                nickname: kakaoUser.data.nickname,
+                nickname: kakaoUser.data.profile_nickname,
                 mbti: MBTI.EMPTY
             });
             return newUser.id;
