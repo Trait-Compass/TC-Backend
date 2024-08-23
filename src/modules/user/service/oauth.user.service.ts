@@ -36,7 +36,7 @@ export class OauthUserService {
 
         if (!kakaoUser) throw new BadRequestException("카카오 로그인 실패");
 
-        const user = await this.userService.findByTcId(kakaoUser.data.id);
+        const user = await this.userService.findByTcId(kakaoUser.data.kakao_account.email);
 
         if (!user) {
             const newUser = await this.userService.createUser({
