@@ -12,6 +12,9 @@ import {WinstonModule} from "./modules/winston/winston.module";
 import {AwsModule} from "./aws/aws.module";
 import {LoggingInterceptor} from "./interceptor/logging.interceptor";
 import {APP_INTERCEPTOR} from "@nestjs/core";
+import {MongooseModule} from "@nestjs/mongoose";
+import {ExelModule} from "./modules/exel/exel.module";
+import {TourModule} from "./modules/tour/tour.module";
 
 @Module({
   imports: [
@@ -31,6 +34,7 @@ import {APP_INTERCEPTOR} from "@nestjs/core";
           ],
           synchronize: Boolean(process.env.DB_SYNCHRONIZE),
       }),
+      MongooseModule.forRoot(process.env.MONGODB_URL),
       FilterModule,
       UserModule,
       AuthModule,
@@ -38,6 +42,8 @@ import {APP_INTERCEPTOR} from "@nestjs/core";
       DataModule,
       WinstonModule,
       AwsModule,
+      ExelModule,
+      TourModule,
   ],
   controllers: [AppController],
   providers:[{

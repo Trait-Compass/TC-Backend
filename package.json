@@ -29,6 +29,7 @@
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/mongoose": "^10.0.10",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.4.0",
     "@nestjs/typeorm": "^10.0.2",
@@ -38,12 +39,16 @@
     "class-validator": "^0.14.1",
     "cross-env": "^7.0.3",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.8.0",
+    "mongoose": "^8.5.3",
     "mysql2": "^3.10.2",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20",
+    "v": "^0.3.0",
     "winston": "^3.13.1",
-    "winston-cloudwatch": "^6.3.0"
+    "winston-cloudwatch": "^6.3.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
