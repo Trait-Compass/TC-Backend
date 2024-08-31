@@ -15,6 +15,7 @@ import {APP_INTERCEPTOR} from "@nestjs/core";
 import {MongooseModule} from "@nestjs/mongoose";
 import {ExelModule} from "./modules/exel/exel.module";
 import {TourModule} from "./modules/tour/tour.module";
+import {SpotModule} from "./modules/spot/spot.module";
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import {TourModule} from "./modules/tour/tour.module";
       AwsModule,
       ExelModule,
       TourModule,
+      SpotModule,
   ],
   controllers: [AppController],
   providers:[{
