@@ -1,8 +1,10 @@
 import {Injectable} from '@nestjs/common';
 import {SimpleCourseQuery} from "../query/simpleCourse.query";
-import {Category, Cities, cityMapping, Counties, countyMapping, MBTI} from "../../../common/enums";
+import {Category, Location, locationMapping, MBTI} from "../../../common/enums";
 import {PhotoService} from "../../photo/course/service/photo.service";
 import {PhotoDto} from "../../photo/course/dto/photo.dto";
+import {PcourseQuery} from "../query/pCourse.query";
+import {JcourseQuery} from "../query/jCourse.query";
 
 @Injectable()
 export class CourseService {
@@ -16,9 +18,9 @@ export class CourseService {
     }
     // TODO 로직 적용
     async getBestCourse(): Promise<PhotoDto[]> {
-        const mappedCityCategoryList = await this.getMappedCitiesAndCategories();
-        const dataArrays = await Promise.all(Object.entries(mappedCityCategoryList).map(async ([city, category]) => {
-            const photo = await this.photoService.getPhotoList(city as string, category as string);
+        const mappedLocationCategoryList = await this.getMappedLocationsAndCategories()
+        const dataArrays = await Promise.all(Object.entries(mappedLocationCategoryList).map(async ([location, category]) => {
+            const photo = await this.photoService.getPhotoList(location as string, category as string);
             photo.mbti = await this.getRandomMBTI() as string;
             return photo;
         }));
@@ -26,27 +28,26 @@ export class CourseService {
     }
 
     async getSimpleCourse(simpleCourseQuery: SimpleCourseQuery): Promise<PhotoDto[]> {
-        const mappedCityCategoryList = await this.getMappedCitiesAndCategories();
-        const dataArrays = await Promise.all(Object.entries(mappedCityCategoryList).map(async ([city, category]) => {
-            return await this.photoService.getPhotoList(city as string, category as string);
+        const mappedLocationCategoryList = await this.getMappedLocationsAndCategories();
+        const dataArrays = await Promise.all(Object.entries(mappedLocationCategoryList).map(async ([location, category]) => {
+            return await this.photoService.getPhotoList(location as string, category as string);
         }));
         return dataArrays.flat();
     }
 
-    async getMappedCitiesAndCategories(): Promise<Record<Cities , Category>> {
-        const cityKeys = Object.keys(Cities) as Array<keyof typeof Cities>;
-        const countyKeys = Object.keys(Counties) as Array<keyof typeof Counties>;
+    async getMappedLocationsAndCategories(): Promise<Record<Location , Category>> {
+        const locationKeys = Object.keys(Location) as Array<keyof typeof Location>;
         const categories = Object.keys(Category) as Array<keyof typeof Category>;
 
-        const randomCities = await this.getRandomUniqueElements(cityKeys, 4);
-        const randomCategories1 = await this.getRandomElements(categories, 4);
+        const randomLocations = await this.getRandomUniqueElements(locationKeys, 4);
+        const randomCategories = await this.getRandomElements(categories, 4);
 
-        const cityMap = randomCities.reduce((acc, city, index) => {
-            acc[Cities[city]] = Category[randomCategories1[index]];
+        const locationMap = randomLocations.reduce((acc, location, index) => {
+            acc[Location[location]] = Category[randomCategories[index]];
             return acc;
-        }, {} as Record<Cities, Category>);
+        }, {} as Record<Location, Category>);
 
-        return cityMap;
+        return locationMap;
     }
 
 
@@ -75,21 +76,15 @@ export class CourseService {
         return result;
     }
 
-    async getRandomCodeMappings(): Promise<Record<string, string>> {
-        const cityKeys = Object.keys(Cities) as Array<keyof typeof Cities>;
-        const countyKeys = Object.keys(Counties) as Array<keyof typeof Counties>;
+    async getRandomCodeMappings(): Promise<Record<string, number>> {
+        const locationKeys = Object.keys(Location) as Array<keyof typeof Location>;
 
-        const randomCities = await this.getRandomUniqueElements(cityKeys, 2);
-        const randomCounties = await this.getRandomUniqueElements(countyKeys, 2);
+        const randomLocations = await this.getRandomUniqueElements(locationKeys, 4);
 
-        const result: Record<string, string> = {};
+        const result: Record<string, number> = {};
 
-        randomCities.forEach((city) => {
-            result[Cities[city]] = cityMapping[Cities[city]];
-        });
-
-        randomCounties.forEach((county) => {
-            result[Counties[county]] = countyMapping[Counties[county]];
+        randomLocations.forEach((location) => {
+            result[Location[location]] = locationMapping[Location[location]];
         });
 
         return result;
@@ -99,6 +94,22 @@ export class CourseService {
         const mbtiValues = Object.values(MBTI);
         const randomIndex = Math.floor(Math.random() * mbtiValues.length);
         return mbtiValues[randomIndex];
+    }
+
+    async getPcourse(pcourseQuery: PcourseQuery): Promise<PhotoDto[]> {
+        const mappedLocationCategoryList = await this.getMappedLocationsAndCategories();
+        const dataArrays = await Promise.all(Object.entries(mappedLocationCategoryList).map(async ([location, category]) => {
+            return await this.photoService.getPhotoList(location as string, category as string);
+        }));
+        return dataArrays.flat();
+    }
+
+    async getJcourse(jcourseQuery: JcourseQuery): Promise<PhotoDto[]> {
+        const mappedLocationCategoryList = await this.getMappedLocationsAndCategories();
+        const dataArrays = await Promise.all(Object.entries(mappedLocationCategoryList).map(async ([location, category]) => {
+            return await this.photoService.getPhotoList(location as string, category as string);
+        }));
+        return dataArrays.flat();
     }
 
 }
