@@ -3,7 +3,8 @@ import {ExcelService} from "./exel.service";
 
 @Controller('exel')
 export class ExelController {
-    constructor(private readonly excelService: ExcelService) {}
+    constructor(private readonly excelService: ExcelService) {
+    }
 
     @Get()
     async importData(): Promise<string> {
