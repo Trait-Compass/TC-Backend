@@ -20,7 +20,7 @@ export class Tour {
     @Prop({ required: true })
     mapy: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, index: true })
     code: number;
 
     @Prop({ required: true })
@@ -33,4 +33,5 @@ export class Tour {
 export const TourSchema = SchemaFactory.createForClass(Tour);
 
 TourSchema.index({ contentId: 1 }, { unique: true });
+TourSchema.index({ code: 1 });
 TourSchema.index({ keywords: 1 });
