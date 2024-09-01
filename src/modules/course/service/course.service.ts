@@ -156,11 +156,12 @@ export class CourseService {
             if (tour) {
                 if (tour.imageUrl) {
                     location.imageUrl = tour.imageUrl;
+                } else {
+                    location.imageUrl = await this.photoService.getPhoto(tour.title);
                 }
                 if (tour.keywords) {
                     location.keywords = tour.keywords.map(keywordNumber => reverseKeywordMapping[keywordNumber]);
                 }
-                console.log(location)
             }
         }
     }

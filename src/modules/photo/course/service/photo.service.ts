@@ -8,7 +8,7 @@ import {getCurrentDate} from "../../../../util/date.util";
 export class PhotoService {
     private readonly courseApiUrl = 'http://apis.data.go.kr/B551011/KorService1/searchKeyword1';
     private readonly festivalApiUrl = 'http://apis.data.go.kr/B551011/KorService1/searchFestival1';
-    private readonly serviceKey = '+LyqFE/M7h+t8Otc5Xmd8o0HEXk6ssL2BjY89nUsJ2xx1x30csAyRnYjk5be7Ubynl9FZXMfUeBNtoRDJKEU/A==';
+    private readonly photoApiUrl = 'https://apis.data.go.kr/B551011/PhotoGalleryService1/gallerySearchList1';
     async getPhotoList(city: string, category: string): Promise<PhotoDto> {
         let response;
         try {
@@ -23,7 +23,7 @@ export class PhotoService {
                     arrange: 'A',
                     contentTypeId: category,
                     keyword: city,
-                    serviceKey: this.serviceKey,
+                    serviceKey: process.env.SERVICE_KEY,
                 },
             });
         } catch (error) {
@@ -68,7 +68,7 @@ export class PhotoService {
                     listYN: 'Y',
                     eventStartDate: getCurrentDate(),
                     areaCode: '36',
-                    serviceKey: this.serviceKey,
+                    serviceKey: process.env.SERVICE_KEY,
                 },
             });
         } catch (error) {
@@ -85,5 +85,34 @@ export class PhotoService {
         return  items.map((item: { addr: any; title: any; firstimage: any; }) => {
             return {city: item.addr, title: item.title, image: item.firstimage};
         });
+    }
+
+    async getPhoto(keyword: string): Promise<string> {
+        let response;
+        try {
+            response = await axios.get(this.photoApiUrl, {
+                params: {
+                    numOfRows: '1',
+                    pageNo: '0',
+                    MobileOS: 'IOS',
+                    MobileApp: 'tc',
+                    _type: 'json',
+                    keyword: keyword,
+                    serviceKey: process.env.SERVICE_KEY,
+                },
+            });
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new HttpException(error.response?.data || 'Unknown error', error.response?.status || 500);
+            }
+        }
+
+        if( response.data.response.body.items == ""){
+            return 'http://tong.visitkorea.or.kr/cms2/website/50/2761950.jpeg';
+        } else {
+            return response.data.response.body.items?.item[0]?.galWebImageUrl ?? " ";
+        }
+
+
     }
 }
