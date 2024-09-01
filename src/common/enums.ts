@@ -111,22 +111,47 @@ export enum GENDER {
 }
 
 export enum Keyword {
-    NATURE = "자연",
-    MOUNTAIN = "산",
-    RIVER = "강",
-    PARK = "공원",
-    VIEW = "경치",
+    RIVER = "강",          // 1
+    HISTORY = "역사",      // 2
+    EXPERIENCE = "체험",   // 3
+    FESTIVAL = "축제",     // 4
+    PARK = "공원",         // 5
+    AMUSEMENT = "놀이공원", // 6
+    LEPORTS = "레포츠",    // 7
+    MOUNTAIN = "산",       // 8
+    DRIVE = "드라이브",    // 9
+    BEACH = "해변",        // 10
+    MARKET = "시장",       // 11
+    NATURE = "자연",       // 12
+    NIGHT_VIEW = "야경",   // 13
+    VIEW = "경치",         // 14
+    HARBOR = "항구",       // 15
+    VILLAGE = "마을",      // 16
+    EXHIBITION = "전시"    // 17
+}
 
-    FESTIVAL = "축제",
-    AMUSEMENT = "놀이공원",
-    LEPORTS = "레포츠",
-    NIGHT_VIEW = "야경",
-    DISPLAY = "전시",
+export const keywordMapping: Record<Keyword, number> = {
+    [Keyword.RIVER]: 1,
+    [Keyword.HISTORY]: 2,
+    [Keyword.EXPERIENCE]: 3,
+    [Keyword.FESTIVAL]: 4,
+    [Keyword.PARK]: 5,
+    [Keyword.AMUSEMENT]: 6,
+    [Keyword.LEPORTS]: 7,
+    [Keyword.MOUNTAIN]: 8,
+    [Keyword.DRIVE]: 9,
+    [Keyword.BEACH]: 10,
+    [Keyword.MARKET]: 11,
+    [Keyword.NATURE]: 12,
+    [Keyword.NIGHT_VIEW]: 13,
+    [Keyword.VIEW]: 14,
+    [Keyword.HARBOR]: 15,
+    [Keyword.VILLAGE]: 16,
+    [Keyword.EXHIBITION]: 17,
+};
 
-    EXPERIENCE = "체험",
-    HISTORY = "역사",
-    DRIVE = "드라이브",
-    MARKET = "시장",
-    HARBOR = "항구",
-    VILLAGE = "마을",
+export const reverseKeywordMapping: Record<number, Keyword> = {};
+
+for (const [key, value] of Object.entries(keywordMapping)) {
+    reverseKeywordMapping[value] = key as Keyword;
 }
