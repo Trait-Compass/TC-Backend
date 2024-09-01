@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import {TourSchema} from "./tour.schema";
+import {Keyword} from "../../../common/enums";
 
 export type TravelCourseDocument = TravelCourse & Document;
 
@@ -11,6 +12,13 @@ export class Location {
 
     @Prop({ required: true })
     id: number;
+
+    @Prop()
+    imageUrl?: string;
+
+    @Prop()
+    keywords?: Keyword[];
+
 }
 
 @Schema()

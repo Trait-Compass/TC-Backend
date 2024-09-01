@@ -5,6 +5,8 @@ import {SimpleCourseQuery} from "../query/simpleCourse.query";
 import {PhotoDto} from "../../photo/course/dto/photo.dto";
 import {PcourseQuery} from "../query/pCourse.query";
 import {JcourseQuery} from "../query/jCourse.query";
+import {Tour} from "../../tour/schema/tour.schema";
+import {TravelCourse} from "../../tour/schema/course.schema";
 
 @Controller('/course')
 @ApiTags('Course')
@@ -17,7 +19,7 @@ export class CourseController {
     @Get('/simple')
     async getSimpleCourse(
         @Query() simpleCourseQuery: SimpleCourseQuery
-    ): Promise<PhotoDto[]> {
+    ): Promise<TravelCourse[]> {
         return await this.courseService.getSimpleCourse(simpleCourseQuery);
     }
 
@@ -37,7 +39,7 @@ export class CourseController {
     @Get('/p')
     async getPcourse(
         @Query() pCourseQuery: PcourseQuery
-    ): Promise<PhotoDto[]> {
+    ): Promise<Tour[]> {
         return await this.courseService.getPcourse(pCourseQuery);
     }
 
@@ -45,7 +47,7 @@ export class CourseController {
     @Get('/j')
     async getJcourse(
         @Query() jCourseQuery: JcourseQuery
-    ): Promise<PhotoDto[]> {
+    ): Promise<Tour[]> {
         return await this.courseService.getJcourse(jCourseQuery);
     }
 }
