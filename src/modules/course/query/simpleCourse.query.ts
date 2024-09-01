@@ -1,14 +1,17 @@
 import {ApiProperty} from "@nestjs/swagger";
-import {IsDateString, IsNotEmpty, IsString} from "class-validator";
+import {IsDateString, IsEnum, IsNotEmpty, IsString} from "class-validator";
+import {MBTI} from "../../../common/enums";
 
 export class SimpleCourseQuery {
+    @IsEnum(MBTI)
     @ApiProperty({
         description: '선택한 mbti',
         example: 'ENFP',
+        enum: MBTI
     })
     @IsNotEmpty()
     @IsString()
-    mbti: string;
+    mbti: MBTI;
 
     @ApiProperty({
         description: '여행 시작 날짜',
