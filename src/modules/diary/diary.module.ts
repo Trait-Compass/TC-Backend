@@ -4,6 +4,8 @@ import {Diary, DiarySchema} from "./schema/diary.schema";
 import {DiaryController} from "./diary.controller";
 import {DiaryService} from "./diary.service";
 import {S3} from "@aws-sdk/client-s3";
+import {GptService} from "../gpt/gpt.service";
+import OpenAI from "openai";
 
 @Module({
   imports: [
@@ -11,7 +13,7 @@ import {S3} from "@aws-sdk/client-s3";
     { name: Diary.name, schema: DiarySchema }])
   ],
   controllers: [DiaryController],
-  providers: [DiaryService,S3],
+  providers: [DiaryService,S3,GptService, OpenAI],
     exports: [DiaryService],
 })
 export class DiaryModule {}

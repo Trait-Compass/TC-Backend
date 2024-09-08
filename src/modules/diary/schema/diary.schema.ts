@@ -11,8 +11,15 @@ export class Diary {
     @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     user: User;
 
-    @Prop({ type: [String], required: false, default: [] })
-    travelPhotos: string[];
+    @Prop({
+        type: [{
+            imageUrl: { type: String, required: true },
+            keywords: { type: [String], required: true }
+        }],
+        required: false,
+        default: []
+    })
+    travelPhotos: { imageUrl: string, keywords: string[] }[];
 
     // Satisfaction chart
     @Prop({ type: Number, min: 0, max: 10 })
