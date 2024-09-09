@@ -6,6 +6,6 @@ export class AppController {
     @ApiOperation({summary : '서버 health 확인 API' })
     @Get()
     healthCheck(): string {
-        return 'health'
+        return 'healthy'
     }
 }
