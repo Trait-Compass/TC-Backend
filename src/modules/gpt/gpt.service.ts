@@ -10,9 +10,8 @@ export class GptService {
     });
   }
 
-  async chatGptVision(url: string): Promise<string> {
+  async getKeywords(url: string): Promise<string> {
     try {
-      // Make a request to the ChatGPT Vision model
       const completion = await this.openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
@@ -28,12 +27,10 @@ export class GptService {
         max_tokens: 1000,
       });
 
-      // Extract the content from the response
       const [content] = completion.choices.map((choice) => choice.message.content);
 
       return content;
     } catch (e) {
-      // Log and propagate the error
       console.error(e);
       throw new ServiceUnavailableException('Unable to recognize image');
     }

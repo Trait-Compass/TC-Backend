@@ -18,6 +18,7 @@ export class DiaryRequest {
 
     @ApiProperty({ required: true })
     @IsDate()
+    @Transform(({ value }) => new Date(value))
     travelDate: Date;
 
     // 여행 사진 - 배열의 이미지 파일

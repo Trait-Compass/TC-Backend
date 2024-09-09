@@ -48,8 +48,9 @@ export class AppModule {
         consumer
             .apply(AuthMiddleware)
             .exclude(
+                { path: 'user', method: RequestMethod.POST },
                 { path: 'user/(.*)', method: RequestMethod.ALL },
-                { path: 'oauth/(.*)', method: RequestMethod.ALL },
+                { path: 'oauth/kakao', method: RequestMethod.ALL },
                 { path: '/', method: RequestMethod.ALL }
             )
             .forRoutes('*');
