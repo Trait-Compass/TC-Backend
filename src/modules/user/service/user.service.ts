@@ -6,6 +6,7 @@ import {AuthService} from "../../auth/service/auth.service";
 import {InjectModel} from "@nestjs/mongoose";
 import {User, UserDocument} from "../schema/user.schema";
 import {Model} from "mongoose";
+import {MBTI} from "../../../common/enums";
 
 @Injectable()
 export class UserService {
@@ -64,6 +65,12 @@ export class UserService {
 
     async findByTcId(tcId: string): Promise<UserDocument | null> {
         return this.userModel.findOne({ tcId }).exec();
+    }
+
+    async patchMbti(mbti: MBTI, id: string): Promise<void> {
+        const user = await this.userModel.findById({ id }).exec();
+        user.mbti = mbti;
+        await user.save();
     }
 
 }
