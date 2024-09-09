@@ -51,6 +51,9 @@ export class AppModule {
                 { path: 'user', method: RequestMethod.POST },
                 { path: 'user/(.*)', method: RequestMethod.ALL },
                 { path: 'oauth/kakao', method: RequestMethod.ALL },
+                { path: 'course/simple', method: RequestMethod.ALL },
+                { path: 'course/best', method: RequestMethod.ALL },
+                { path: 'course/festival', method: RequestMethod.ALL },
                 { path: '/', method: RequestMethod.ALL }
             )
             .forRoutes('*');
