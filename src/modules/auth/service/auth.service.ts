@@ -1,43 +1,52 @@
-import {Injectable} from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';
-import {HttpError} from "../../../common/exception/HttpError";
-import { TokenExpiredError } from 'jsonwebtoken';
-import * as util from "node:util";
+import {ForbiddenException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {Request} from "express";
+import {JwtService} from "@nestjs/jwt";
+import { UserDetail } from "../user";
 
 @Injectable()
 export class AuthService {
+    constructor(
+        private readonly jwtService: JwtService,
+    ) {
+    }
     private secret = process.env.JWT_SECRET;
 
     async createJwt(role: string, userId : string){
-        return await util.promisify(jwt.sign)(
+        return this.jwtService.sign(
+            { role, userId },
             {
-                rol: role,
-                usr: userId || 'none',
-            },
-            this.secret, // Use the single secret
-            {
-                algorithm: 'HS256',
-                expiresIn: '7 days',
+                secret: this.secret,
+                expiresIn: '2h',
             },
         );
     }
 
-    verify(
-        token: string,
-    ): { role: any; usr: any } {
-        try {
-            const result = jwt.verify(token, this.secret, {
-                algorithms: 'HS256',
+    async getUser(
+        req: Request,
+    ): Promise<UserDetail> {
+        const token = this.extractTokenFromHeader(req);
+
+        if (!token) throw new UnauthorizedException('토큰이 없습니다');
+
+        const user = await this.jwtService
+            .verifyAsync<UserDetail>(token, {
+                secret: this.secret
+            })
+            .catch(() => {
+                throw new ForbiddenException('유효한 토큰이 아닙니다');
             });
-            return {
-                role: result.rol,
-                usr: result.usr || 'none',
-            };
-        } catch (e) {
-            if (e instanceof TokenExpiredError) {
-                throw new HttpError(401, 'TOKEN_EXPIRED', '만료된 토큰입니다.');
-            }
-            return undefined;
-        }
+
+        if (!user) throw new UnauthorizedException('유저 정보가 없습니다.');
+
+        return user;
     }
+
+    private extractTokenFromHeader(request: Request): string | null {
+        const authHeader = request.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return null;
+        }
+        return authHeader.split(' ')[1];
+    }
+
 }

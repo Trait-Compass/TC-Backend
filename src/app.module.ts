@@ -1,8 +1,7 @@
-import { Module } from '@nestjs/common';
+import {MiddlewareConsumer, Module, RequestMethod} from '@nestjs/common';
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {FilterModule} from "./filter/filter.module";
-import {UserEntity} from "./modules/user/entity/user.entity";
 import {UserModule} from "./modules/user/user.module";
 import {CourseModule} from "./modules/course/course.module";
 import {AuthModule} from "./modules/auth/auth.module";
@@ -16,24 +15,14 @@ import {MongooseModule} from "@nestjs/mongoose";
 import {ExelModule} from "./modules/exel/exel.module";
 import {TourModule} from "./modules/tour/tour.module";
 import {SpotModule} from "./modules/spot/spot.module";
+import {DiaryModule} from "./modules/diary/diary.module";
+import {AuthMiddleware} from "./modules/middlewares/auth.middleware";
 
 @Module({
   imports: [
       ConfigModule.forRoot({
           isGlobal: true,
           envFilePath: '.env'
-      }),
-      TypeOrmModule.forRoot({
-          type: 'mysql',
-          host: process.env.DB_HOST,
-          port: Number(process.env.DB_PORT),
-          username: process.env.DB_USERNAME,
-          password: process.env.DB_PASSWORD,
-          database: process.env.DB_DATABASE,
-          entities: [
-              UserEntity
-          ],
-          synchronize: Boolean(process.env.DB_SYNCHRONIZE),
       }),
       MongooseModule.forRoot(process.env.MONGODB_URL),
       FilterModule,
@@ -46,6 +35,7 @@ import {SpotModule} from "./modules/spot/spot.module";
       ExelModule,
       TourModule,
       SpotModule,
+      DiaryModule,
   ],
   controllers: [AppController],
   providers:[{
@@ -53,4 +43,16 @@ import {SpotModule} from "./modules/spot/spot.module";
       useClass: LoggingInterceptor,
   }],
 })
-export class AppModule {}
+export class AppModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer
+            .apply(AuthMiddleware)
+            .exclude(
+                { path: 'user', method: RequestMethod.POST },
+                { path: 'user/(.*)', method: RequestMethod.ALL },
+                { path: 'oauth/kakao', method: RequestMethod.ALL },
+                { path: '/', method: RequestMethod.ALL }
+            )
+            .forRoutes('*');
+    }
+}

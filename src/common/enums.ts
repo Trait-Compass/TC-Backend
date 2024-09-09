@@ -155,3 +155,62 @@ export const reverseKeywordMapping: Record<number, Keyword> = {};
 for (const [key, value] of Object.entries(keywordMapping)) {
     reverseKeywordMapping[value] = key as Keyword;
 }
+
+export enum Happy {
+    JOY = '기쁨',
+    FUN = '재미있음',
+    ENJOYMENT = '즐거움',
+    LIVELY = '활기참',
+    EXCITEMENT = '황홀함',
+    GRATEFUL = '감사함',
+}
+
+export enum Satisfied {
+    ACHIEVEMENT = '성취감',
+    EMOTIONAL = '감동적임',
+    STABILITY = '안정감',
+    SATISFACTION = '만족감',
+    FULFILLMENT = '호뭇함',
+    RESERVED = '보람참',
+}
+
+export enum Comfortable {
+    RELAXED = '안락함',
+    WARM = '따뜻함',
+    PEACEFUL = '평화로움',
+    RELIEF = '여유로움',
+    REST = '휴식',
+}
+
+export enum Surprised {
+    AMAZEMENT = '감탄',
+    WONDER = '경이로움',
+    CURIOSITY = '신비로움',
+    SURPRISE = '깜짝 놀람',
+    DISCOVERY = '새로운 발견',
+}
+
+export enum Disappointed {
+    DISAPPOINTMENT = '아쉬움',
+    EXHAUSTION = '허탈함',
+    REGRET = '후회',
+    FRUSTRATION = '좌절',
+    HELPLESS = '답답함',
+    DESPAIR = '막막함',
+}
+
+export enum Sad {
+    TEARS = '눈물',
+    DEPRESSION = '우울함',
+    DESPAIR_SAD = '절망감',
+    LONELINESS = '침울함',
+    SORROW = '쓸쓸함',
+}
+
+export enum Angry {
+    ANNOYED = '짜증',
+    ANGER = '분노',
+    RESENTMENT = '억울함',
+    INDIFFERENCE = '어이없음',
+    UNFAIR = '불쾌함',
+}
