@@ -1,5 +1,5 @@
-import { IsArray, IsEnum, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import {IsArray, IsDate, IsEnum, IsNumber, IsOptional, IsString, Max, Min} from 'class-validator';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {Angry, Comfortable, Disappointed, Happy, Sad, Satisfied, Surprised} from "../../../../common/enums";
 import {Transform} from "class-transformer";
 
@@ -11,6 +11,14 @@ const splitAndTrim = (value: any): string[] => {
 };
 
 export class DiaryRequest {
+
+    @ApiProperty({ example: '고성 낭만 투어', required: true })
+    @IsString()
+    courseName: string;
+
+    @ApiProperty({ required: true })
+    @IsDate()
+    travelDate: Date;
 
     // 여행 사진 - 배열의 이미지 파일
     @ApiPropertyOptional({ type: 'array', items: { type: 'string', format: 'binary' }, description: '여행에서 찍은 사진들 (최대 10장)', required: false })

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {MiddlewareConsumer, Module, RequestMethod} from '@nestjs/common';
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {FilterModule} from "./filter/filter.module";
@@ -16,6 +16,7 @@ import {ExelModule} from "./modules/exel/exel.module";
 import {TourModule} from "./modules/tour/tour.module";
 import {SpotModule} from "./modules/spot/spot.module";
 import {DiaryModule} from "./modules/diary/diary.module";
+import {AuthMiddleware} from "./modules/middlewares/auth.middleware";
 
 @Module({
   imports: [
@@ -42,4 +43,15 @@ import {DiaryModule} from "./modules/diary/diary.module";
       useClass: LoggingInterceptor,
   }],
 })
-export class AppModule {}
+export class AppModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer
+            .apply(AuthMiddleware)
+            .exclude(
+                { path: 'user/(.*)', method: RequestMethod.ALL },
+                { path: 'oauth/(.*)', method: RequestMethod.ALL },
+                { path: '/', method: RequestMethod.ALL }
+            )
+            .forRoutes('*');
+    }
+}

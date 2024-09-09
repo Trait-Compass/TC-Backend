@@ -3,7 +3,7 @@ import {Model} from "mongoose";
 import {Diary, DiaryDocument} from "./schema/diary.schema";
 import {DiaryRequest} from "./dto/request/diary.request";
 import { v4 as uuidv4 } from 'uuid';
-import {Inject} from "@nestjs/common";
+import {Inject, NotFoundException} from "@nestjs/common";
 import {S3} from "@aws-sdk/client-s3";
 import {GptService} from "../gpt/gpt.service";
 
@@ -31,12 +31,14 @@ export class DiaryService {
             });
             const fileUrl = `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${s3Key}`;
 
-            const gptKeywords = await this.gptService.chatGptVision(fileUrl);
+            const gptKeywords = await this.gptService.getKeywords(fileUrl);
             travelPhotosWithKeywords.push({ imageUrl: fileUrl, keywords: JSON.parse(gptKeywords) });
         }
 
         const newDiary = new this.diaryModel({
             user: userId,
+            courseName: diaryRequest.courseName,
+            travelDate: diaryRequest.travelDate,
             travelPhotos: travelPhotosWithKeywords,
             transportationSatisfaction: diaryRequest.transportationSatisfaction,
             sightseeingSatisfaction: diaryRequest.sightseeingSatisfaction,
@@ -58,4 +60,22 @@ export class DiaryService {
 
         await newDiary.save();
     }
+
+    async getDiaryList(userId: string): Promise<Diary[]> {
+        const diaries = await this.diaryModel.find({ user: userId }).exec();
+        if (!diaries || diaries.length === 0) {
+            return [];
+        }
+        return diaries;
+    }
+
+    async getDiaryById(id: string, userId: string): Promise<Diary> {
+        const diary = await this.diaryModel.findOne({ _id: id, user: userId }).exec(); // Match both diary ID and user ID
+
+        if (!diary) {
+            throw new NotFoundException(`ID: ${id} 일기가 없습니다`);
+        }
+        return diary;
+    }
+
 }

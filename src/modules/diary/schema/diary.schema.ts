@@ -1,15 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import {Angry, Comfortable, Disappointed, Happy, Sad, Satisfied, Surprised} from "../../../common/enums";
-import {User} from "../../user/schema/user.schema"; // Adjust the path according to your file structure
+import {User} from "../../user/schema/user.schema";
 
 export type DiaryDocument = Diary & Document;
 
 @Schema({ timestamps: true })
 export class Diary {
 
-    @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+    @Prop({ type: Types.ObjectId, ref: 'User' })
     user: User;
+
+    @Prop({ type: String})
+    courseName: string;
+
+    @Prop()
+    travelDate: Date;
 
     @Prop({
         type: [{
