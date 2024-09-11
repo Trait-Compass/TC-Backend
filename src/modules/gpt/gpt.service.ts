@@ -6,7 +6,7 @@ export class GptService {
   constructor(private readonly openai: OpenAI) {
     this.openai = new OpenAI({
       organization: 'org-2hBClm68lIMWeMQq40Iyn9Va',
-      apiKey: process.env.GPT_API_KEY,
+      apiKey: process.env.OPENAI_API_KEY,
     });
   }
 
