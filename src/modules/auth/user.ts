@@ -6,5 +6,11 @@ export class UserDetail {
     role: ROLE;
 
     @ApiProperty({ description: '유저 아이디' })
-    id: string;
+    userId: string;
+
+    @ApiProperty({ description: '생성' })
+    iat: number;
+
+    @ApiProperty({ description: '만료' })
+    exp: number;
 }
