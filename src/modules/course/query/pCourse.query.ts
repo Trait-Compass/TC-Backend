@@ -14,7 +14,7 @@ export class PcourseQuery {
 
     @ApiProperty({
         description: '여행 시작 날짜',
-        example: '24-07-12',
+        example: '2024-09-18T17:34:02.666Z',
     })
     @IsNotEmpty()
     @IsDateString()
@@ -22,7 +22,7 @@ export class PcourseQuery {
 
     @ApiProperty({
         description: '여행 마지막 날짜',
-        example: '24-07-15',
+        example: '2024-09-18T17:34:02.666Z',
     })
     @IsNotEmpty()
     @IsDateString()

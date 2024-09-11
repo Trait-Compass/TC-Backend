@@ -169,12 +169,21 @@ export class CourseService {
         }
     }
 
-    async saveJcourse(query: JcourseSaveQuery): Promise<boolean> {
+    async saveJcourse(query: JcourseSaveQuery, userId): Promise<boolean> {
         const travelCourse = await this.travelCourseModel.findById(query.id).exec();
 
         if (!travelCourse) {
             throw new NotFoundException('존재하지 않는 코스입니다');
         }
+
+        const user = await this.userModel.findById(userId).exec();
+
+
+        if (!user.courses.includes(travelCourse.id)) {
+            user.courses.push(travelCourse.id);
+        }
+
+        await user.save();
 
         await travelCourse.save();
 
@@ -182,5 +191,17 @@ export class CourseService {
     }
 
 
+
+    async getMycourses(id: string): Promise<TravelCourse[]>{
+        const user = await this.userModel
+            .findById(id)
+            .populate({
+                path: 'courses',
+                model: 'TravelCourse'
+            })
+            .exec();
+
+        return user.courses as unknown as TravelCourse[];
+    }
 
 }

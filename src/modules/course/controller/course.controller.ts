@@ -8,6 +8,8 @@ import {JcourseQuery} from "../query/jCourse.query";
 import {Tour} from "../../tour/schema/tour.schema";
 import {TravelCourse} from "../../tour/schema/course.schema";
 import {UserAuthGuard} from "../../guards/auth.guard";
+import {TcUser} from "../../../decorator/user.decorator";
+import {UserDetail} from "../../auth/user";
 import {JcourseSaveQuery} from "../query/jCourse-save.query";
 
 @Controller('/course')
@@ -59,8 +61,18 @@ export class CourseController {
     @ApiOperation({summary : '여행 일정: J형 코스 저장 API' })
     @Post('/j')
     async saveJcourse(
-        @Query() query: JcourseSaveQuery
+        @Query() query: JcourseSaveQuery,
+        @TcUser() userDetail: UserDetail
     ): Promise<boolean> {
-        return await this.courseService.saveJcourse(query);
+        return await this.courseService.saveJcourse(query,userDetail.userId);
+    }
+
+    @UseGuards(UserAuthGuard)
+    @ApiOperation({summary : '마이페이지: 코스 조회 API' })
+    @Get('/my')
+    async getMycourses(
+        @TcUser() userDetail: UserDetail
+    ): Promise<TravelCourse[]> {
+        return await this.courseService.getMycourses(userDetail.userId);
     }
 }

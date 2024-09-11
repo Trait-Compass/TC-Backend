@@ -64,6 +64,6 @@ export class UserController {
         @Param() patchMbtiQuery: PatchMbtiQuery,
         @TcUser() userDetail: UserDetail,
     ){
-        await this.userService.patchMbti(patchMbtiQuery.mbti, userDetail.id);
+        await this.userService.patchMbti(patchMbtiQuery.mbti, userDetail.userId);
     }
 }

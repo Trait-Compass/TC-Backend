@@ -21,7 +21,7 @@ export class DiaryController {
         @Body() diaryRequest: DiaryRequest,
         @TcUser() userDetail: UserDetail
     ) {
-        await this.diaryService.createDiary(diaryRequest,files,userDetail.id);
+        await this.diaryService.createDiary(diaryRequest,files,userDetail.userId);
     }
 
     @Get('/list')
@@ -29,7 +29,7 @@ export class DiaryController {
         @UploadedFiles() files: Array<Express.Multer.File>,
         @TcUser() userDetail: UserDetail
     ) {
-        return await this.diaryService.getDiaryList(userDetail.id);
+        return await this.diaryService.getDiaryList(userDetail.userId);
     }
 
     @Get(':id')
@@ -37,7 +37,7 @@ export class DiaryController {
         @Param('id') id: string,
         @TcUser() userDetail: UserDetail
     ) {
-        return await this.diaryService.getDiaryById(id, userDetail.id);
+        return await this.diaryService.getDiaryById(id, userDetail.userId);
     }
 
 }
