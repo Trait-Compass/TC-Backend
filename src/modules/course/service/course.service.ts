@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import {SimpleCourseQuery} from "../query/simpleCourse.query";
 import {
     Category,
@@ -19,6 +19,8 @@ import {Tour, TourDocument} from "../../tour/schema/tour.schema";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
 import {TravelCourse, TravelCourseDocument} from "../../tour/schema/course.schema";
+import {JcourseSaveQuery} from "../query/jCourse-save.query";
+import {User, UserDocument} from "../../user/schema/user.schema";
 
 @Injectable()
 export class CourseService {
@@ -26,6 +28,7 @@ export class CourseService {
         private readonly photoService: PhotoService,
         @InjectModel(Tour.name) private tourModel: Model<TourDocument>,
         @InjectModel(TravelCourse.name) private travelCourseModel: Model<TravelCourseDocument>,
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
     ) {}
 
     async getFestival(): Promise<PhotoDto[]> {
@@ -165,5 +168,19 @@ export class CourseService {
             }
         }
     }
+
+    async saveJcourse(query: JcourseSaveQuery): Promise<boolean> {
+        const travelCourse = await this.travelCourseModel.findById(query.id).exec();
+
+        if (!travelCourse) {
+            throw new NotFoundException('존재하지 않는 코스입니다');
+        }
+
+        await travelCourse.save();
+
+        return true;
+    }
+
+
 
 }

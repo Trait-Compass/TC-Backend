@@ -1,4 +1,4 @@
-import {Controller, Get, Query, UseGuards } from '@nestjs/common';
+import {Controller, Get, Post, Query, UseGuards} from '@nestjs/common';
 import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import {CourseService} from "../service/course.service";
 import {SimpleCourseQuery} from "../query/simpleCourse.query";
@@ -8,6 +8,7 @@ import {JcourseQuery} from "../query/jCourse.query";
 import {Tour} from "../../tour/schema/tour.schema";
 import {TravelCourse} from "../../tour/schema/course.schema";
 import {UserAuthGuard} from "../../guards/auth.guard";
+import {JcourseSaveQuery} from "../query/jCourse-save.query";
 
 @Controller('/course')
 @ApiTags('Course')
@@ -52,5 +53,14 @@ export class CourseController {
         @Query() jCourseQuery: JcourseQuery
     ): Promise<Tour[]> {
         return await this.courseService.getJcourse(jCourseQuery);
+    }
+
+    @UseGuards(UserAuthGuard)
+    @ApiOperation({summary : '여행 일정: J형 코스 저장 API' })
+    @Post('/j')
+    async saveJcourse(
+        @Query() query: JcourseSaveQuery
+    ): Promise<boolean> {
+        return await this.courseService.saveJcourse(query);
     }
 }
