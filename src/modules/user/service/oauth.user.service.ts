@@ -48,7 +48,7 @@ export class OauthUserService {
         if (!user) {
             const newUser = await this.userService.createUser({
                 id: kakaoEmail,
-                password: '',
+                password: 'kakao',
                 isOauth: true,
                 nickname: kakaoNickname,
                 mbti: MBTI.EMPTY,
