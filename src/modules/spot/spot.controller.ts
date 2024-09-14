@@ -1,12 +1,11 @@
 import {Controller, Get, Query} from "@nestjs/common";
 import {ApiOperation, ApiTags} from "@nestjs/swagger";
-import {PhotoDto} from "../photo/course/dto/photo.dto";
 import {RecommandQuery} from "./query/recommand.query";
-import {JcourseQuery} from "../course/query/jCourse.query";
-import {ExcelService} from "../exel/exel.service";
 import {SpotService} from "./spot.service";
-import {MbtiQuery} from "./query/mbti.query";
 import {Tour} from "../tour/schema/tour.schema";
+import {TcUser} from "../../decorator/user.decorator";
+import {UserDetail} from "../auth/user";
+import {MbtiTourListResponse} from "./dto/response/mbti-spot-list.response";
 
 @Controller('/spot')
 @ApiTags('Spot')
@@ -31,8 +30,8 @@ export class SpotController {
     @ApiOperation({summary : '추천 코스/계획 - J: MBTI 여행지' })
     @Get('/mbti')
     async getMbtiSpot(
-        @Query() mbtiQuery: MbtiQuery
-    ): Promise<Tour[]> {
-        return await this.spotService.getMbtiSpot(mbtiQuery.mbti);
+        @TcUser() userDetail: UserDetail
+    ): Promise<MbtiTourListResponse> {
+        return await this.spotService.getMbtiSpot(userDetail.userId);
     }
 }
