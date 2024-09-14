@@ -1,6 +1,17 @@
-import {IsArray, IsDate, IsEnum, IsNumber, IsOptional, IsString, Max, Min} from 'class-validator';
+import {
+    IsArray,
+    IsDate,
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    Max,
+    Min,
+    ValidateIf
+} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
-import {Angry, Comfortable, Disappointed, Happy, Sad, Satisfied, Surprised} from "../../../../common/enums";
+import {Angry, Comfortable, Disappointed, Happy, Nature, Sad, Satisfied, Surprised} from "../../../../common/enums";
 import {Transform} from "class-transformer";
 
 const splitAndTrim = (value: any): string[] => {
@@ -21,60 +32,83 @@ export class DiaryRequest {
     @Transform(({ value }) => new Date(value))
     travelDate: Date;
 
-    // 여행 사진 - 배열의 이미지 파일
-    @ApiPropertyOptional({ type: 'array', items: { type: 'string', format: 'binary' }, description: '여행에서 찍은 사진들 (최대 10장)', required: false })
+    @ApiProperty({ description: '일기 종류', example: 'T', required: true, enum: Nature})
+    @IsEnum(Nature)
+    nature: Nature;
+
+    @ApiPropertyOptional({ type: 'array', items: { type: 'string', format: 'binary' }, description: '여행에서 찍은 사진들 (최대 10장)' })
+    @ValidateIf(o => o.travelPhotos !== undefined && o.travelPhotos !== null && o.travelPhotos !== '')
     @IsOptional()
     @IsArray()
-    travelPhotos: Express.Multer.File[]
+    travelPhotos?: Express.Multer.File[] | null;
 
     // 만족도 평가
     @ApiPropertyOptional({ example: 8, description: '교통 편의성 만족도 (0~10)' })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.T)
+    @IsNotEmpty()
     @IsNumber()
     @Min(0)
     @Max(10)
     @Transform(({ value }) => Number(value))
-    transportationSatisfaction: number;
+    transportationSatisfaction?: number;
 
     @ApiPropertyOptional({ example: 9, description: '관광 명소 만족도 (0~10)' })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.T)
+    @IsNotEmpty()
     @IsNumber()
     @Min(0)
     @Max(10)
     @Transform(({ value }) => Number(value))
-    sightseeingSatisfaction: number;
+    sightseeingSatisfaction?: number;
 
     @ApiPropertyOptional({ example: 7, description: '숙소 만족도 (0~10)' })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.T)
+    @IsNotEmpty()
     @IsNumber()
     @Min(0)
     @Max(10)
     @Transform(({ value }) => Number(value))
-    accommodationSatisfaction: number;
+    accommodationSatisfaction?: number;
 
     @ApiPropertyOptional({ example: 6, description: '가격 대비 만족도 (0~10)' })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.T)
+    @IsNotEmpty()
     @IsNumber()
     @Min(0)
     @Max(10)
     @Transform(({ value }) => Number(value))
-    priceSatisfaction: number;
+    priceSatisfaction?: number;
 
     @ApiPropertyOptional({ example: 8, description: '환경 및 위생 만족도 (0~10)' })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.T)
+    @IsNotEmpty()
     @IsNumber()
     @Min(0)
     @Max(10)
     @Transform(({ value }) => Number(value))
-    environmentSatisfaction: number;
+    environmentSatisfaction?: number;
 
     @ApiPropertyOptional({ example: 9, description: '음식 만족도 (0~10)' })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.T)
+    @IsNotEmpty()
     @IsNumber()
     @Min(0)
     @Max(10)
     @Transform(({ value }) => Number(value))
-    foodSatisfaction: number;
+    foodSatisfaction?: number;
+
+    // 피드백 필드
+    @ApiPropertyOptional({ example: '여행이 정말 즐거웠어요.', description: '만족한 점' })
+    @ValidateIf(o => o.nature === Nature.T)
+    @IsNotEmpty()
+    @IsString()
+    satisfactionFeedback?: string;
+
+    @ApiPropertyOptional({ example: '숙소 서비스가 조금 부족했어요.', description: '유지할 점' })
+    @ValidateIf(o => o.nature === Nature.T)
+    @IsNotEmpty()
+    @IsString()
+    keepFeedback?: string;
 
     @ApiPropertyOptional({
         type: [String],
@@ -83,10 +117,11 @@ export class DiaryRequest {
         example: ['기쁨', '즐거움'],
         isArray: true
     })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.F)
+    @IsNotEmpty()
     @IsEnum(Happy, { each: true })
     @Transform(({ value }) => splitAndTrim(value))
-    happyEmotions: Happy[];
+    happyEmotions?: Happy[];
 
     @ApiPropertyOptional({
         type: [String],
@@ -95,10 +130,11 @@ export class DiaryRequest {
         example: ['성취감', '감동적임'],
         isArray: true
     })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.F)
+    @IsNotEmpty()
     @IsEnum(Satisfied, { each: true })
     @Transform(({ value }) => splitAndTrim(value))
-    satisfiedEmotions: Satisfied[];
+    satisfiedEmotions?: Satisfied[];
 
     @ApiPropertyOptional({
         type: [String],
@@ -107,10 +143,11 @@ export class DiaryRequest {
         example: ['안락함', '평화로움'],
         isArray: true
     })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.F)
+    @IsNotEmpty()
     @IsEnum(Comfortable, { each: true })
     @Transform(({ value }) => splitAndTrim(value))
-    comfortableEmotions: Comfortable[];
+    comfortableEmotions?: Comfortable[];
 
     @ApiPropertyOptional({
         type: [String],
@@ -119,10 +156,11 @@ export class DiaryRequest {
         example: ['감탄', '새로운 발견'],
         isArray: true
     })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.F)
+    @IsNotEmpty()
     @IsEnum(Surprised, { each: true })
     @Transform(({ value }) => splitAndTrim(value))
-    surprisedEmotions: Surprised[];
+    surprisedEmotions?: Surprised[];
 
     @ApiPropertyOptional({
         type: [String],
@@ -131,10 +169,11 @@ export class DiaryRequest {
         example: ['아쉬움', '후회'],
         isArray: true
     })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.F)
+    @IsNotEmpty()
     @IsEnum(Disappointed, { each: true })
     @Transform(({ value }) => splitAndTrim(value))
-    disappointedEmotions: Disappointed[];
+    disappointedEmotions?: Disappointed[];
 
     @ApiPropertyOptional({
         type: [String],
@@ -143,10 +182,11 @@ export class DiaryRequest {
         example: ['우울함', '절망감'],
         isArray: true
     })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.F)
+    @IsNotEmpty()
     @IsEnum(Sad, { each: true })
     @Transform(({ value }) => splitAndTrim(value))
-    sadEmotions: Sad[];
+    sadEmotions?: Sad[];
 
     @ApiPropertyOptional({
         type: [String],
@@ -155,24 +195,28 @@ export class DiaryRequest {
         example: ['짜증', '분노'],
         isArray: true
     })
-    @IsOptional()
+    @ValidateIf(o => o.nature === Nature.F)
+    @IsNotEmpty()
     @IsEnum(Angry, { each: true })
     @Transform(({ value }) => splitAndTrim(value))
-    angryEmotions: Angry[];
+    angryEmotions?: Angry[];
 
     // 피드백 필드
-    @ApiPropertyOptional({ example: '여행이 정말 즐거웠어요.', description: '긍정적인 피드백', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ example: '여행이 정말 즐거웠어요.', description: '긍정적인 피드백' })
+    @ValidateIf(o => o.nature === Nature.F)
+    @IsNotEmpty()
     @IsString()
-    positiveFeedback: string;
+    positiveFeedback?: string;
 
-    @ApiPropertyOptional({ example: '숙소 서비스가 조금 부족했어요.', description: '개선할 점', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ example: '숙소 서비스가 조금 부족했어요.', description: '개선할 점' })
+    @ValidateIf(o => o.nature === Nature.F)
+    @IsNotEmpty()
     @IsString()
-    improvementFeedback: string;
+    improvementFeedback?: string;
 
-    @ApiPropertyOptional({ example: '이번 여행은 정말 잊을 수 없을 것 같아요.', description: '여행을 마무리하는 한 마디', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ example: '이번 여행은 정말 잊을 수 없을 것 같아요.', description: '여행을 마무리하는 한 마디' })
+    @ValidateIf(o => o.nature === Nature.F)
+    @IsNotEmpty()
     @IsString()
-    finalThoughts: string;
+    finalThoughts?: string;
 }
