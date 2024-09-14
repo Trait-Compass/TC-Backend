@@ -2,6 +2,7 @@ import {ForbiddenException, Injectable, UnauthorizedException} from '@nestjs/com
 import {Request} from "express";
 import {JwtService} from "@nestjs/jwt";
 import { UserDetail } from "../user";
+import {MBTI} from "../../../common/enums";
 
 @Injectable()
 export class AuthService {

@@ -17,7 +17,7 @@ export class OauthUserService {
         let userId;
         switch (oauthLoginRequest.vendor) {
             case 'kakao': {
-                userId = await this.getUserByKakaoAccessToken(oauthLoginRequest.accessToken);
+                userId = await this.getUserByKakaoAccessToken(oauthLoginRequest.accessToken.access_token);
                 break;
             }
             default: {

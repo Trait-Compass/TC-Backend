@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {ROLE} from "../../common/enums";
+import {MBTI, ROLE} from "../../common/enums";
 
 export class UserDetail {
     @ApiProperty({ description: '역할', enum: ROLE })
@@ -7,6 +7,9 @@ export class UserDetail {
 
     @ApiProperty({ description: '유저 아이디' })
     userId: string;
+
+    @ApiProperty({ description: '유저 mbti' })
+    mbti: MBTI;
 
     @ApiProperty({ description: '생성' })
     iat: number;
