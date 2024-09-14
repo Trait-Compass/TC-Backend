@@ -39,6 +39,7 @@ export class DiaryService {
             user: userId,
             courseName: diaryRequest.courseName,
             travelDate: diaryRequest.travelDate,
+            nature: diaryRequest.nature,
             travelPhotos: travelPhotosWithKeywords,
             transportationSatisfaction: diaryRequest.transportationSatisfaction,
             sightseeingSatisfaction: diaryRequest.sightseeingSatisfaction,

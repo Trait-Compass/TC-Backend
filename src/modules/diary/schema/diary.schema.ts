@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import {Angry, Comfortable, Disappointed, Happy, Sad, Satisfied, Surprised} from "../../../common/enums";
+import {Angry, Comfortable, Disappointed, Happy, Nature, Sad, Satisfied, Surprised} from "../../../common/enums";
 import {User} from "../../user/schema/user.schema";
 
 export type DiaryDocument = Diary & Document;
@@ -16,6 +16,9 @@ export class Diary {
 
     @Prop()
     travelDate: Date;
+
+    @Prop()
+    nature: Nature;
 
     @Prop({
         type: [{
