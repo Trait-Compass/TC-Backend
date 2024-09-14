@@ -214,3 +214,8 @@ export enum Angry {
     INDIFFERENCE = '어이없음',
     UNFAIR = '불쾌함',
 }
+
+export enum Nature {
+    T = 'T',
+    F = 'F'
+}
