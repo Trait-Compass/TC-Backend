@@ -3,11 +3,13 @@ import {SpotService} from "./spot.service";
 import {SpotController} from "./spot.controller";
 import {MongooseModule} from "@nestjs/mongoose";
 import {Tour, TourSchema} from "../tour/schema/tour.schema";
-import {TravelCourse, TravelCourseSchema} from "../tour/schema/course.schema";
+import {User, UserSchema} from "../user/schema/user.schema";
 
 @Module({
   imports: [MongooseModule.forFeature([
-        { name: Tour.name, schema: TourSchema }])],
+        { name: Tour.name, schema: TourSchema },
+        { name: User.name, schema: UserSchema }
+  ])],
   controllers: [SpotController],
   providers: [SpotService],
     exports: [SpotService],
