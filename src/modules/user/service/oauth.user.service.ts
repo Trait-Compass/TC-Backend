@@ -56,7 +56,7 @@ export class OauthUserService {
             user = await this.userService.findByTcId(kakaoEmail);
         }
 
-        return user.id();
+        return user.id;
     }
 }
 
