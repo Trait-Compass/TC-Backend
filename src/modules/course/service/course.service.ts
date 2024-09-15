@@ -19,7 +19,7 @@ import {Tour, TourDocument} from "../../tour/schema/tour.schema";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
 import {TravelCourse, TravelCourseDocument} from "../../tour/schema/course.schema";
-import {CourseSaveQuery} from "../query/course-save.query";
+import {JcourseSaveQuery} from "../query/jCourse-save.query";
 import {User, UserDocument} from "../../user/schema/user.schema";
 
 @Injectable()
@@ -182,7 +182,7 @@ export class CourseService {
         }
     }
 
-    async saveCourse(query: CourseSaveQuery, userId: string): Promise<boolean> {
+    async saveJcourse(query: JcourseSaveQuery, userId): Promise<boolean> {
         const travelCourse = await this.travelCourseModel.findById(query.id).exec();
 
         if (!travelCourse) {
