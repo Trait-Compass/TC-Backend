@@ -61,7 +61,7 @@ export class UserController {
     @Patch('/mbti')
     @UseGuards(UserAuthGuard)
     async patchMbti(
-        @Param() patchMbtiQuery: PatchMbtiQuery,
+        @Query() patchMbtiQuery: PatchMbtiQuery,
         @TcUser() userDetail: UserDetail,
     ){
         await this.userService.patchMbti(patchMbtiQuery.mbti, userDetail.userId);
