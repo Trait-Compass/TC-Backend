@@ -107,7 +107,7 @@ export class CourseService {
 
     async getRandomMBTI(): Promise<MBTI> {
         const mbtiValues = Object.values(MBTI);
-        const randomIndex = Math.floor(Math.random() * mbtiValues.length);
+        const randomIndex = Math.floor(Math.random() * (mbtiValues.length - 1)) + 1;
         return mbtiValues[randomIndex];
     }
 
