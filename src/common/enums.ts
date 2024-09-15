@@ -39,49 +39,49 @@ export const mbtiKeywords: Record<MBTI, number[]> = {
 };
 
 export enum Location {
-    거제 = "거제",
-    김해 = "김해",
-    마산 = "마산",
-    밀양 = "밀양",
-    사천 = "사천",
-    양산 = "양산",
-    진주 = "진주",
-    진해 = "진해",
-    창원 = "창원",
-    통영 = "통영",
-    거창 = "거창",
-    고성 = "고성",
-    남해 = "남해",
-    산청 = "산청",
-    의령 = "의령",
-    창녕 = "창녕",
-    하동 = "하동",
-    함안 = "함안",
-    함양 = "함양",
-    합천 = "합천"
+    거제시 = "거제시",   // City
+    김해시 = "김해시",   // City
+    마산시 = "마산시",   // City
+    밀양시 = "밀양시",   // City
+    사천시 = "사천시",   // City
+    양산시 = "양산시",   // City
+    진주시 = "진주시",   // City
+    진해시 = "진해시",   // City
+    창원시 = "창원시",   // City
+    통영시 = "통영시",   // City
+    거창군 = "거창군",   // County
+    고성군 = "고성군",   // County
+    남해군 = "남해군",   // County
+    산청군 = "산청군",   // County
+    의령군 = "의령군",   // County
+    창녕군 = "창녕군",   // County
+    하동군 = "하동군",   // County
+    함안군 = "함안군",   // County
+    함양군 = "함양군",   // County
+    합천군 = "합천군",   // County
 }
 
 export const locationMapping: Record<Location, number> = {
-    [Location.거제]: 1,
-    [Location.김해]: 4,
-    [Location.마산]: 6,
-    [Location.밀양]: 7,
-    [Location.사천]: 8,
-    [Location.양산]: 10,
-    [Location.진주]: 13,
-    [Location.진해]: 14,
-    [Location.창원]: 16,
-    [Location.통영]: 17,
-    [Location.거창]: 2,
-    [Location.고성]: 3,
-    [Location.남해]: 5,
-    [Location.산청]: 9,
-    [Location.의령]: 12,
-    [Location.창녕]: 15,
-    [Location.하동]: 18,
-    [Location.함안]: 19,
-    [Location.함양]: 20,
-    [Location.합천]: 21
+    [Location.거제시]: 1,
+    [Location.김해시]: 4,
+    [Location.마산시]: 6,
+    [Location.밀양시]: 7,
+    [Location.사천시]: 8,
+    [Location.양산시]: 10,
+    [Location.진주시]: 13,
+    [Location.진해시]: 14,
+    [Location.창원시]: 16,
+    [Location.통영시]: 17,
+    [Location.거창군]: 2,
+    [Location.고성군]: 3,
+    [Location.남해군]: 5,
+    [Location.산청군]: 9,
+    [Location.의령군]: 12,
+    [Location.창녕군]: 15,
+    [Location.하동군]: 18,
+    [Location.함안군]: 19,
+    [Location.함양군]: 20,
+    [Location.합천군]: 21
 };
 
 export enum Companion {

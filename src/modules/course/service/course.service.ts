@@ -111,8 +111,8 @@ export class CourseService {
         return mbtiValues[randomIndex];
     }
 
-    async getPcourse(pcourseQuery: PcourseQuery): Promise<Tour[]> {
-        return this.findByCode(locationMapping[pcourseQuery.location]);
+    async getPcourse(pcourseQuery: PcourseQuery): Promise<TravelCourse[]> {
+        return this.findPCourses(pcourseQuery.location);
     }
 
     async getJcourse(jcourseQuery: JcourseQuery): Promise<Tour[]> {
@@ -130,6 +130,19 @@ export class CourseService {
             [courses[i], courses[j]] = [courses[j], courses[i]];
         }
 
+        const randomCourses = courses.slice(0, 4);
+
+        for (const course of randomCourses) {
+            await this.populateLocations(course.day1);
+            await this.populateLocations(course.day2);
+            await this.populateLocations(course.day3);
+        }
+
+        return randomCourses;
+    }
+
+    async findPCourses(location: Location): Promise<TravelCourse[]> {
+        const courses = await this.travelCourseModel.find({ region: location }).exec();
         const randomCourses = courses.slice(0, 4);
 
         for (const course of randomCourses) {

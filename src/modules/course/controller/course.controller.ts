@@ -44,7 +44,7 @@ export class CourseController {
     @Get('/p')
     async getPcourse(
         @Query() pCourseQuery: PcourseQuery
-    ): Promise<Tour[]> {
+    ): Promise<TravelCourse[]> {
         return await this.courseService.getPcourse(pCourseQuery);
     }
 
