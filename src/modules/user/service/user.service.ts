@@ -68,9 +68,8 @@ export class UserService {
     }
 
     async patchMbti(mbti: MBTI, id: string): Promise<void> {
-        const user = await this.userModel.findById({ id }).exec();
+        const user = await this.userModel.findById(id).exec(); // Pass `id` directly as a string
         user.mbti = mbti;
         await user.save();
     }
-
 }

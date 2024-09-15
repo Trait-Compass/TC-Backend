@@ -49,7 +49,9 @@ export class AppModule {
             .apply(AuthMiddleware)
             .exclude(
                 { path: 'user', method: RequestMethod.POST },
-                { path: 'user/(.*)', method: RequestMethod.ALL },
+                { path: 'user/login', method: RequestMethod.ALL },
+                { path: 'user/id/:id', method: RequestMethod.ALL },
+                { path: 'user/nickname/:nickname', method: RequestMethod.ALL },
                 { path: 'oauth/kakao', method: RequestMethod.ALL },
                 { path: 'course/simple', method: RequestMethod.ALL },
                 { path: 'course/best', method: RequestMethod.ALL },

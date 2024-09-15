@@ -23,7 +23,7 @@ export class SpotService {
     }
 
     async getMbtiSpot(userId: string): Promise<MbtiTourListResponse> {
-        const user = await this.userModel.findOne({ id: userId }).exec();
+        const user = await this.userModel.findById(userId).exec();
 
         if (!user.mbti || user.mbti === MBTI.EMPTY) {
             throw new Error('MBTI가 없습니다');
