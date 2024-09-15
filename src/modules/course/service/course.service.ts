@@ -7,10 +7,9 @@ import {
     Location,
     locationMapping,
     MBTI,
-    mbtiKeywords,
     reverseKeywordMapping
 } from "../../../common/enums";
-import { Location as CourseLocation } from "../../tour/schema/course.schema";
+import {Location as CourseLocation, TravelCourse, TravelCourseDocument} from "../../tour/schema/course.schema";
 import {PhotoService} from "../../photo/course/service/photo.service";
 import {PhotoDto} from "../../photo/course/dto/photo.dto";
 import {PcourseQuery} from "../query/pCourse.query";
@@ -18,7 +17,6 @@ import {JcourseQuery} from "../query/jCourse.query";
 import {Tour, TourDocument} from "../../tour/schema/tour.schema";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
-import {TravelCourse, TravelCourseDocument} from "../../tour/schema/course.schema";
 import {JcourseSaveQuery} from "../query/jCourse-save.query";
 import {User, UserDocument} from "../../user/schema/user.schema";
 import {PcourseSaveRequestDto} from "../dto/pCourse-save";
@@ -40,7 +38,7 @@ export class CourseService {
     async getBestCourse(): Promise<PhotoDto[]> {
         const mappedLocationCategoryList = await this.getMappedLocationsAndCategories()
         const dataArrays = await Promise.all(Object.entries(mappedLocationCategoryList).map(async ([location, category]) => {
-            const photo = await this.photoService.getPhotoList(location as string, category as string);
+            const photo = await this.photoService.getPhotoList(location as Location, category);
             photo.mbti = await this.getRandomMBTI() as string;
             return photo;
         }));
@@ -58,12 +56,10 @@ export class CourseService {
         const randomLocations = await this.getRandomUniqueElements(locationKeys, 4);
         const randomCategories = await this.getRandomElements(categories, 4);
 
-        const locationMap = randomLocations.reduce((acc, location, index) => {
+        return randomLocations.reduce((acc, location, index) => {
             acc[Location[location]] = Category[randomCategories[index]];
             return acc;
         }, {} as Record<Location, Category>);
-
-        return locationMap;
     }
 
 

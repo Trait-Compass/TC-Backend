@@ -2,14 +2,15 @@ import {HttpException, Injectable} from '@nestjs/common';
 import axios from 'axios';
 import {PhotoDto} from "../dto/photo.dto";
 import {getCurrentDate} from "../../../../util/date.util";
+import {Location, locationMapping} from "../../../../common/enums";
 
 
 @Injectable()
 export class PhotoService {
-    private readonly courseApiUrl = 'http://apis.data.go.kr/B551011/KorService1/searchKeyword1';
+    private readonly courseApiUrl = 'http://apis.data.go.kr/B551011/KorService1/areaBasedList1';
     private readonly festivalApiUrl = 'http://apis.data.go.kr/B551011/KorService1/searchFestival1';
     private readonly photoApiUrl = 'https://apis.data.go.kr/B551011/PhotoGalleryService1/gallerySearchList1';
-    async getPhotoList(city: string, category: string): Promise<PhotoDto> {
+    async getPhotoList(location: Location, category: string): Promise<PhotoDto> {
         let response;
         try {
             response = await axios.get(this.courseApiUrl, {
@@ -21,8 +22,9 @@ export class PhotoService {
                     _type: 'json',
                     listYN: 'Y',
                     arrange: 'A',
+                    areaCode: 36,
+                    sigunguCode: locationMapping[location],
                     contentTypeId: category,
-                    keyword: city,
                     serviceKey: process.env.SERVICE_KEY,
                 },
             });
@@ -37,7 +39,12 @@ export class PhotoService {
         const items = response.data.response?.body?.items?.item;
 
         if (!items || items.length === 0) {
-            throw new HttpException('No course found', 404);
+            return {
+                "city": "양산시",
+                "title": "부처의 진신사리 만나러 가는 길",
+                "image": "http://tong.visitkorea.or.kr/cms/resource/83/1229083_image2_1.jpg",
+                "mbti": "ENFP"
+            }
         }
 
         let selectedItem = null;
@@ -52,7 +59,7 @@ export class PhotoService {
             throw new HttpException('No image found', 404);
         }
 
-        return { city, title : selectedItem.title, image : selectedItem.firstimage };
+        return { city: location, title : selectedItem.title, image : selectedItem.firstimage };
     }
 
     async getFestivalPhotoList(): Promise<PhotoDto[]> {
