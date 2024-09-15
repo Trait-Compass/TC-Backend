@@ -21,6 +21,7 @@ import {Model} from "mongoose";
 import {TravelCourse, TravelCourseDocument} from "../../tour/schema/course.schema";
 import {JcourseSaveQuery} from "../query/jCourse-save.query";
 import {User, UserDocument} from "../../user/schema/user.schema";
+import {PcourseSaveRequestDto} from "../dto/pCourse-save";
 
 @Injectable()
 export class CourseService {
@@ -202,6 +203,76 @@ export class CourseService {
 
         return true;
     }
+
+    async savePcourse(body: PcourseSaveRequestDto, userId: string): Promise<boolean> {
+        const user = await this.userModel.findById(userId).exec();
+
+        const findTourByContentId = async (contentId: number) => {
+            const tour = await this.tourModel.findOne({ contentId }).exec();
+            if (!tour) {
+                console.warn(`Tour with contentId ${contentId} not found`);
+            }
+            return tour;
+        };
+
+        const day1Locations = await Promise.all(
+            (body.day1 || []).map(async (location) => {
+                const tour = await findTourByContentId(location.contentId);
+                return {
+                    name: tour?.title || 'Unknown Location',
+                    id: location.contentId,
+                    imageUrl: tour?.imageUrl || null,
+                    keywords: tour?.keywords || [],
+                };
+            })
+        );
+
+        const day2Locations = await Promise.all(
+            (body.day2 || []).map(async (location) => {
+                const tour = await findTourByContentId(location.contentId);
+                return {
+                    name: tour?.title || 'Unknown Location',
+                    id: location.contentId,
+                    imageUrl: tour?.imageUrl || null,
+                    keywords: tour?.keywords || [],
+                };
+            })
+        );
+
+        const day3Locations = await Promise.all(
+            (body.day3 || []).map(async (location) => {
+                const tour = await findTourByContentId(location.contentId);
+                return {
+                    name: tour?.title || 'Unknown Location',
+                    id: location.contentId,
+                    imageUrl: tour?.imageUrl || null,
+                    keywords: tour?.keywords || [],
+                };
+            })
+        );
+
+        const travelCourse = new this.travelCourseModel({
+            user: user._id,
+            region: body.region,
+            courseName: body.courseName,
+            duration: body.duration,
+            day1: day1Locations,
+            day2: day2Locations,
+            day3: day3Locations,
+        });
+
+        await travelCourse.save();
+
+        if (!user.courses.includes(travelCourse.id)) {
+            user.courses.push(travelCourse.id);
+        }
+
+        await user.save();
+        return true;
+    }
+
+
+
 
 
 
