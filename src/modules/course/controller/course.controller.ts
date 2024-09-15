@@ -10,7 +10,7 @@ import {TravelCourse} from "../../tour/schema/course.schema";
 import {UserAuthGuard} from "../../guards/auth.guard";
 import {TcUser} from "../../../decorator/user.decorator";
 import {UserDetail} from "../../auth/user";
-import {JcourseSaveQuery} from "../query/jCourse-save.query";
+import {CourseSaveQuery} from "../query/course-save.query";
 
 @Controller('/course')
 @ApiTags('Course')
@@ -58,13 +58,13 @@ export class CourseController {
     }
 
     @UseGuards(UserAuthGuard)
-    @ApiOperation({summary : '여행 일정: J형 코스 저장 API' })
-    @Post('/j')
-    async saveJcourse(
-        @Query() query: JcourseSaveQuery,
+    @ApiOperation({summary : '여행 일정: J/P형 코스 저장 API' })
+    @Post()
+    async saveCourse(
+        @Query() query: CourseSaveQuery,
         @TcUser() userDetail: UserDetail
     ): Promise<boolean> {
-        return await this.courseService.saveJcourse(query,userDetail.userId);
+        return await this.courseService.saveCourse(query,userDetail.userId);
     }
 
     @UseGuards(UserAuthGuard)
