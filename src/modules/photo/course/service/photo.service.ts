@@ -112,14 +112,16 @@ export class PhotoService {
             if (axios.isAxiosError(error)) {
                 throw new HttpException(error.response?.data || 'Unknown error', error.response?.status || 500);
             }
+            throw new HttpException('Unexpected error', 500); // Fallback for other errors
         }
 
-        if( response.data.response.body.items == ""){
+        const items = response?.data?.response?.body?.items;
+
+        if (!items || items === "") {
             return 'http://tong.visitkorea.or.kr/cms2/website/50/2761950.jpeg';
-        } else {
-            return response.data.response.body.items?.item[0]?.galWebImageUrl ?? " ";
         }
 
-
+        return items?.item?.[0]?.galWebImageUrl ?? ' ';
     }
+
 }
