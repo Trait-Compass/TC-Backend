@@ -12,6 +12,7 @@ import {PatchMbtiQuery} from "../query/mbti.query";
 import {UserAuthGuard} from "../../guards/auth.guard";
 import {UserDetail} from "../../auth/user";
 import {TcUser} from "../../../decorator/user.decorator";
+import {UserProfileResponse} from "../dto/response/profile.response";
 
 @Controller('/user')
 @ApiTags('User')
@@ -45,7 +46,6 @@ export class UserController {
         checkIdQuery: CheckIdQuery
     ): Promise<boolean> {
         return await this.userService.checkId(checkIdQuery.id);
-
     }
 
     @ApiOperation({summary : '닉네임 중복  검사 API' })
@@ -65,5 +65,14 @@ export class UserController {
         @TcUser() userDetail: UserDetail,
     ){
         await this.userService.patchMbti(patchMbtiQuery.mbti, userDetail.userId);
+    }
+
+    @ApiOperation({summary : '유저 프로파일 API' })
+    @UseGuards(UserAuthGuard)
+    @Get('/profile')
+    async getProfile(
+        @TcUser() userDetail: UserDetail,
+    ): Promise<UserProfileResponse> {
+        return await this.userService.getProfile(userDetail.userId);
     }
 }
