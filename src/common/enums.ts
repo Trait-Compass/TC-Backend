@@ -219,3 +219,44 @@ export enum Nature {
     T = 'T',
     F = 'F'
 }
+
+export const mbtiMatchups: Record<MBTI, { chalTeok: MBTI, hwanJang: MBTI }> = {
+    EMPTY: { chalTeok: MBTI.EMPTY, hwanJang: MBTI.EMPTY },
+    ISTJ: { chalTeok: MBTI.ESFP, hwanJang: MBTI.ENFP },
+    ISFJ: { chalTeok: MBTI.ESTP, hwanJang: MBTI.ENTP },
+    INFJ: { chalTeok: MBTI.ENFP, hwanJang: MBTI.ESTP },
+    INTJ: { chalTeok: MBTI.ENTP, hwanJang: MBTI.ISFP },
+    ISTP: { chalTeok: MBTI.ESFJ, hwanJang: MBTI.ENFJ },
+    ISFP: { chalTeok: MBTI.ESFJ, hwanJang: MBTI.INFJ },
+    INFP: { chalTeok: MBTI.ENFJ, hwanJang: MBTI.ENTJ },
+    INTP: { chalTeok: MBTI.ENTJ, hwanJang: MBTI.ISFJ },
+    ESTP: { chalTeok: MBTI.ISFP, hwanJang: MBTI.INFJ },
+    ESFP: { chalTeok: MBTI.ISTJ, hwanJang: MBTI.INFJ },
+    ENFP: { chalTeok: MBTI.INFJ, hwanJang: MBTI.INTJ },
+    ENTP: { chalTeok: MBTI.INTJ, hwanJang: MBTI.ISFJ },
+    ESTJ: { chalTeok: MBTI.ISFJ, hwanJang: MBTI.INFP },
+    ESFJ: { chalTeok: MBTI.ISTP, hwanJang: MBTI.INFP },
+    ENFJ: { chalTeok: MBTI.INFP, hwanJang: MBTI.ISTP },
+    ENTJ: { chalTeok: MBTI.INTP, hwanJang: MBTI.ISFP }
+};
+
+
+export const mbtiDescriptions: Record<MBTI, string[]> = {
+    EMPTY: [],
+    ISTJ: ["항상 모든 것을 계획하고 준비하는 타입", "여행 중 규칙과 질서를 중시"],
+    ISFJ: ["다른 사람들을 먼저 생각하고 돕는 타입", "여행 중 편안함과 안정감을 중요시함"],
+    INFJ: ["조용하고 깊이 있는 여행을 선호하는 타입", "혼자만의 시간과 내면의 성장이 중요"],
+    INTJ: ["효율적인 여행을 계획하는 타입", "단체 여행보다는 독립적인 여행을 선호"],
+    ISTP: ["계획 없이 자유롭게 여행하는 타입", "액티비티와 모험을 즐김"],
+    ISFP: ["자연과 예술을 사랑하는 타입", "행복하고 아름다운 장소를 찾는 것을 좋아함"],
+    INFP: ["영감을 갈구하는 여행을 즐기는 타입", "타인의 이야기나 문화 탐구에 흥미를 가짐"],
+    INTP: ["지적 호기심을 만족시키기 위해 여행하는 타입", "역사적이거나 과학적인 장소를 선호"],
+    ESTP: ["모험과 스릴을 즐기는 타입", "즉흥적이고 활기찬 여행을 선호"],
+    ESFP: ["사교적이고 활기찬 여행을 즐기는 타입", "다양한 사람들과 어울려 여행을 즐김"],
+    ENFP: ["깊이 여행하기를 즐기는 타입", "구체적인 계획을 잘 안 세우는 타입"],
+    ENTP: ["새로운 아이디어를 경험하고 싶어하는 타입", "전통적인 여행보다는 독특한 여행을 선호"],
+    ESTJ: ["계획적이고 효율적으로 여행을 이끄는 타입", "단체 여행에서 리더 역할을 자처"],
+    ESFJ: ["동행자의 관계를 중요하게 생각하는 타입", "일정과 장소를 신중하게 선택하여 모두가 만족하는 여행을 추구"],
+    ENFJ: ["사람들과의 연결을 중요하게 여기는 타입", "여행을 통해 새로운 인연을 만들고 영감을 얻음"],
+    ENTJ: ["목표를 세우고 이를 달성하는 여행을 선호", "리더십을 발휘하여 단체 여행을 이끄는 역할"]
+};

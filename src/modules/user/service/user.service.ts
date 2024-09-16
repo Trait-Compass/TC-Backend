@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
 import {SignupRequest} from "../dto/request/signup.request";
 import {SignupResponse} from "../dto/response/signup.response";
 import {LoginRequest} from "../dto/request/login.request";
@@ -6,7 +6,9 @@ import {AuthService} from "../../auth/service/auth.service";
 import {InjectModel} from "@nestjs/mongoose";
 import {User, UserDocument} from "../schema/user.schema";
 import {Model} from "mongoose";
-import {MBTI} from "../../../common/enums";
+import {MBTI, mbtiDescriptions, mbtiMatchups} from "../../../common/enums";
+import {UserProfileResponse} from "../dto/response/profile.response";
+import {EMPTY} from "rxjs";
 
 @Injectable()
 export class UserService {
@@ -71,5 +73,14 @@ export class UserService {
         const user = await this.userModel.findById(id).exec(); // Pass `id` directly as a string
         user.mbti = mbti;
         await user.save();
+    }
+
+    async getProfile(userId: string): Promise<UserProfileResponse> {
+        const user = await this.userModel.findById(userId).exec();
+        if(!user.mbti || user.mbti === MBTI.EMPTY){
+            throw new NotFoundException("설정된 mbti가 없습니다");
+        }
+        return {nickname: user.nickname, mbti: user.mbti, mbtiDescription: mbtiDescriptions[user.mbti], mbtiMatchups: mbtiMatchups[user.mbti]};
+
     }
 }
