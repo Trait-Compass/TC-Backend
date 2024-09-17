@@ -2,12 +2,10 @@ import {Injectable, NotFoundException} from '@nestjs/common';
 import {SimpleCourseQuery} from "../query/simpleCourse.query";
 import {
     Category,
-    Companion,
-    Keyword,
+    Companion, Keyword,
     keywordMapping,
     Location,
-    locationMapping,
-    MBTI,
+    locationMapping, MBTI,
     mbtiKeywords,
     reverseKeywordMapping
 } from "../../../common/enums";
@@ -37,18 +35,41 @@ export class CourseService {
     kakaoCarNaviUrl = 'https://apis-navi.kakaomobility.com/v1/waypoints/directions';
 
     async getFestival(): Promise<PhotoDto[]> {
-        const mappedCodeList = await this.getRandomCodeMappings();
         return await this.photoService.getFestivalPhotoList();
     }
 
     async getBestCourse(): Promise<PhotoDto[]> {
-        const mappedLocationCategoryList = await this.getMappedLocationsAndCategories()
-        const dataArrays = await Promise.all(Object.entries(mappedLocationCategoryList).map(async ([location, category]) => {
-            const photo = await this.photoService.getPhotoList(location as Location, category);
-            photo.mbti = await this.getRandomMBTI() as string;
-            return photo;
-        }));
-        return dataArrays.flat();
+        const existingCourses = await this.travelCourseModel
+            .find()
+            .lean()
+            .exec();
+
+        const shuffledCourses = this.shuffleArray(existingCourses);
+        const selectedCourses = shuffledCourses.slice(0, 3);
+
+        for (const course of selectedCourses) {
+            await this.populateLocations(course.day1);
+        }
+
+        return Promise.all(selectedCourses.map(async (course) => await this.mapCourseToPhotoDto(course)));
+    }
+
+    private async mapCourseToPhotoDto(course: TravelCourse): Promise<PhotoDto> {
+        return {
+            mbti: this.findFirstMbtiForKeyword(course.day1[0].keywords[0]),
+            city: course.region,
+            title: course.courseName,
+            image: course.day1[0]?.imageUrl || await this.photoService.getPhoto(course.day1[0].name),
+        };
+    }
+
+    private findFirstMbtiForKeyword(keyword: Keyword): MBTI {
+        for (const mbti of Object.keys(mbtiKeywords)) {
+            if (mbtiKeywords[mbti as MBTI].includes(keywordMapping[keyword])) {
+                return mbti as MBTI;
+            }
+        }
+        return null;
     }
 
     async getSimpleCourse(simpleCourseQuery: SimpleCourseQuery): Promise<TravelCourse[]> {
@@ -108,12 +129,6 @@ export class CourseService {
         return result;
     }
 
-    async getRandomMBTI(): Promise<MBTI> {
-        const mbtiValues = Object.values(MBTI);
-        const randomIndex = Math.floor(Math.random() * (mbtiValues.length - 1)) + 1;
-        return mbtiValues[randomIndex];
-    }
-
     async getPcourse(pcourseQuery: PcourseQuery): Promise<TravelCourse[]> {
         return this.createCourses(pcourseQuery);
     }
@@ -140,18 +155,6 @@ export class CourseService {
         }
 
         return randomCourses;
-    }
-
-    async findByCode(code: number): Promise<Tour[]> {
-        return this.tourModel.find({ code }).exec();
-    }
-
-    async findByCodeAndKeywords(code: number, keywords: Keyword[]): Promise<Tour[]> {
-        const keywordNumbers = keywords.map(keyword => keywordMapping[keyword]);
-        return this.tourModel.find({
-            code: code,
-            keywords: { $in: keywordNumbers }
-        }).exec();
     }
 
     private async populateLocations(locations: CourseLocation[]): Promise<void> {
