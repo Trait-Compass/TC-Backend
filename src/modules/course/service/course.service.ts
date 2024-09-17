@@ -347,19 +347,15 @@ export class CourseService {
 
         await Promise.all(
             randomCourses.map(course =>
-                Promise.all([
-                    this.populateLocations(course.day1),
-                    this.populateLocations(course.day2),
-                    this.populateLocations(course.day3),
-                    this.populateLocations(course.day4),
-                    this.populateLocations(course.day5),
-                    this.calculateTravelTimes(course.day1),
-                    this.calculateTravelTimes(course.day2),
-                    this.calculateTravelTimes(course.day3),
-                    this.calculateTravelTimes(course.day4),
-                    this.calculateTravelTimes(course.day5),
-
-                ])
+                Promise.all(
+                    Array.from({ length: totalDays }, (_, index) => {
+                        const dayKey = `day${index + 1}`;
+                        return Promise.all([
+                            this.populateLocations(course[dayKey]),
+                            this.calculateTravelTimes(course[dayKey]),
+                        ]);
+                    })
+                )
             )
         );
 
