@@ -41,7 +41,6 @@ export const mbtiKeywords: Record<MBTI, number[]> = {
 export enum Location {
     거제시 = "거제시",   // City
     김해시 = "김해시",   // City
-    마산시 = "마산시",   // City
     밀양시 = "밀양시",   // City
     사천시 = "사천시",   // City
     양산시 = "양산시",   // City
@@ -64,7 +63,6 @@ export enum Location {
 export const locationMapping: Record<Location, number> = {
     [Location.거제시]: 1,
     [Location.김해시]: 4,
-    [Location.마산시]: 6,
     [Location.밀양시]: 7,
     [Location.사천시]: 8,
     [Location.양산시]: 10,

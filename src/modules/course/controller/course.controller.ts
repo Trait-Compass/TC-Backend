@@ -24,7 +24,7 @@ export class CourseController {
     async getSimpleCourse(
         @Query() simpleCourseQuery: SimpleCourseQuery
     ): Promise<TravelCourse[]> {
-        return await this.courseService.getSimpleCourse(simpleCourseQuery);
+        return await this.courseService.getSimpleCourses(simpleCourseQuery);
     }
 
     @ApiOperation({summary : '인기 코스 API' })

@@ -35,4 +35,30 @@ export class GptService {
       throw new ServiceUnavailableException('Unable to recognize image');
     }
   }
+
+  async generateCourseNameFromKeywords(keywords: string): Promise<string> {
+    try {
+
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: `코스 키워드: ${keywords}. 여행 코스의 여행지 키워드를 보고 다른 설명 없이 코스 이름만 만들어서 따음표 없이 반환해줘.` },
+            ],
+          },
+        ],
+        temperature: 0.5,
+        max_tokens: 1000,
+      });
+
+      const [content] = completion.choices.map((choice) => choice.message.content);
+
+      return content;
+    } catch (e) {
+      console.error(e);
+      throw new ServiceUnavailableException('Unable to recognize image');
+    }
+  }
 }
