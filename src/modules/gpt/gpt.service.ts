@@ -45,7 +45,7 @@ export class GptService {
           {
             role: 'user',
             content: [
-              { type: 'text', text: `코스 키워드: ${keywords}. 여행 코스의 여행지 키워드를 보고 다른 설명 없이 코스 이름만 만들어서 따음표 없이 반환해줘.` },
+              { type: 'text', text: `코스 키워드: ${keywords}. 여행 코스의 여행지 키워드를 전체적인 분위기를 따음표 없이 간단하게 코스 이름만 만들어줘.` },
             ],
           },
         ],

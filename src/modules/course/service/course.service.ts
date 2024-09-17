@@ -338,7 +338,11 @@ export class CourseService {
                 Array(coursesToGenerate).fill(null).map(() => this.generateTravelCourse(query, totalDays))
             );
 
-            randomCourses = [...randomCourses, ...newCourses];
+            const createdCourses = await Promise.all(
+                newCourses.map(course => new this.travelCourseModel(course).save())
+            );
+
+            randomCourses = [...randomCourses, ...createdCourses];
         }
 
         await Promise.all(
@@ -391,14 +395,13 @@ export class CourseService {
             location = this.getRandomLocation();
         }
 
-        const keywords = startingLocations
-            .flatMap((location) => location.keywords)
+        const titles = startingLocations
+            .flatMap((location) => location.title)
             .slice(0, 3)
-            .map((keywordNumber) => reverseKeywordMapping[keywordNumber]);
 
-        const keywordString = `["${keywords.join('", "')}"]`;
+        const titleString = `["${titles.join('", "')}"]`;
 
-        const courseName = await this.gptService.generateCourseNameFromKeywords(keywordString);
+        const courseName = await this.gptService.generateCourseNameFromKeywords(titleString);
 
         const travelCourse: TravelCourse = {
             region: location,
@@ -473,7 +476,7 @@ export class CourseService {
             name: tour.title,
             id: tour.contentId,
             imageUrl: tour.imageUrl,
-            keywords: tour.keywords.map(num => Keyword[num-1]),
+            keywords: tour.keywords.map(keywordNumber => reverseKeywordMapping[keywordNumber]),
         };
     }
 
