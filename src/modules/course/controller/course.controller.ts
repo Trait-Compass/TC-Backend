@@ -54,7 +54,7 @@ export class CourseController {
     @Get('/j')
     async getJcourse(
         @Query() jCourseQuery: JcourseQuery
-    ): Promise<Tour[]> {
+    ): Promise<TravelCourse[]> {
         return await this.courseService.getJcourse(jCourseQuery);
     }
 

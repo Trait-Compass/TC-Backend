@@ -112,11 +112,9 @@ export class CourseService {
         return this.findPCourses(pcourseQuery.location);
     }
 
-    async getJcourse(jcourseQuery: JcourseQuery): Promise<Tour[]> {
-        if (!Array.isArray(jcourseQuery.keyword)) {
-            jcourseQuery.keyword = [jcourseQuery.keyword];
-        }
-        return this.findByCodeAndKeywords(locationMapping[jcourseQuery.location], jcourseQuery.keyword);
+    // TODO 임시 로직
+    async getJcourse(jcourseQuery: JcourseQuery): Promise<TravelCourse[]> {
+        return this.findPCourses(jcourseQuery.location);
     }
 
     async findCourses(): Promise<TravelCourse[]> {
