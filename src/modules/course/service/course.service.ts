@@ -144,13 +144,17 @@ export class CourseService {
         const randomCourses = courses.slice(0, 4);
 
         for (const course of randomCourses) {
-            await this.populateLocations(course.day1);
-            await this.populateLocations(course.day2);
-            await this.populateLocations(course.day3);
+            await Promise.all([
+                this.populateLocations(course.day1),
+                this.populateLocations(course.day2),
+                this.populateLocations(course.day3),
+            ]);
 
-            await this.calculateTravelTimes(course.day1);
-            await this.calculateTravelTimes(course.day2);
-            await this.calculateTravelTimes(course.day3);
+            await Promise.all([
+                this.calculateTravelTimes(course.day1),
+                this.calculateTravelTimes(course.day2),
+                this.calculateTravelTimes(course.day3),
+            ]);
         }
 
         return randomCourses;
