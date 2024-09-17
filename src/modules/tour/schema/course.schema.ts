@@ -41,7 +41,7 @@ export class Location {
 export class TravelCourse {
 
     @Prop({ type: Types.ObjectId, ref: 'User' })
-    user: User;
+    user?: User;
 
     @Prop({ required: true })
     region: string;
