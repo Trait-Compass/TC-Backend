@@ -55,7 +55,6 @@ export class SpotService {
             'Content-Type': 'application/json',
         };
 
-        // Request payload for the Kakao API
         const data = {
             origin: { x: startMapX, y: startMapY },
             destination: { x: endtMapX, y: endMapY },
@@ -67,17 +66,20 @@ export class SpotService {
             road_details: false,
         };
 
-        let carResult, walkingResult, transitResult;
-
-        // First, handle car route
         try {
-            const response1 = await axios.post(this.kakaoCarNaviUrl, data, { headers });
-            carResult = response1.data;
+            const response = await axios.post(this.kakaoCarNaviUrl, data, { headers });
+            const carResult = response.data;
 
             const carTime = carResult.routes[0]?.summary?.duration;
             const carDistance = carResult.routes[0]?.summary?.distance;
 
             const walkingTime = carDistance / 1.29;
+
+            if(carDistance === undefined){
+                return {
+                    distance: '측정 불가',
+                };
+            }
 
             const formattedCarDistance = this.formatDistance(carDistance);
             const formattedCarTime = this.formatTime(carTime);
@@ -111,8 +113,4 @@ export class SpotService {
             return meters + ' m';
         }
     }
-
-
-
-
 }

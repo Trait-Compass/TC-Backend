@@ -20,6 +20,7 @@ import {Model} from "mongoose";
 import {JcourseSaveQuery} from "../query/jCourse-save.query";
 import {User, UserDocument} from "../../user/schema/user.schema";
 import {PcourseSaveRequestDto} from "../dto/pCourse-save";
+import axios from "axios";
 
 @Injectable()
 export class CourseService {
@@ -29,6 +30,8 @@ export class CourseService {
         @InjectModel(TravelCourse.name) private travelCourseModel: Model<TravelCourseDocument>,
         @InjectModel(User.name) private userModel: Model<UserDocument>,
     ) {}
+
+    kakaoCarNaviUrl = 'https://apis-navi.kakaomobility.com/v1/waypoints/directions';
 
     async getFestival(): Promise<PhotoDto[]> {
         const mappedCodeList = await this.getRandomCodeMappings();
@@ -144,6 +147,10 @@ export class CourseService {
             await this.populateLocations(course.day1);
             await this.populateLocations(course.day2);
             await this.populateLocations(course.day3);
+
+            await this.calculateTravelTimes(course.day1);
+            await this.calculateTravelTimes(course.day2);
+            await this.calculateTravelTimes(course.day3);
         }
 
         return randomCourses;
@@ -265,11 +272,6 @@ export class CourseService {
         return true;
     }
 
-
-
-
-
-
     async getMycourses(id: string): Promise<TravelCourse[]>{
         const user = await this.userModel
             .findById(id)
@@ -280,6 +282,87 @@ export class CourseService {
             .exec();
 
         return user.courses as unknown as TravelCourse[];
+    }
+
+    private async calculateTravelTimes(locations: CourseLocation[]): Promise<void> {
+        if (locations.length < 2) return;
+
+        for (let i = 0; i < locations.length - 1; i++) {
+            const start = locations[i];
+            const end = locations[i + 1];
+
+            start.travelInfoToNext = await this.getTravelTimeBetweenLocations(start, end);
+        }
+    }
+
+    private async getTravelTimeBetweenLocations(start: CourseLocation, end: CourseLocation): Promise<any> {
+        const startTour = await this.tourModel.findOne({ contentId: start.id }).exec();
+        const endTour = await this.tourModel.findOne({ contentId: end.id }).exec();
+
+        if (!startTour || !endTour) {
+            console.error(`Locations not found for startId: ${start.id} or endId: ${end.id}`);
+            return {
+                car: 'N/A',
+                walk: 'N/A',
+            };
+        }
+
+        const headers = {
+            'Authorization': `KakaoAK ${process.env.KAKAO_KEY}`,
+            'Content-Type': 'application/json',
+        };
+
+        const data = {
+            origin: { x: startTour.mapx, y: startTour.mapy },
+            destination: { x: endTour.mapx, y: endTour.mapy },
+            waypoints: [],
+            priority: 'RECOMMEND',
+            car_fuel: 'GASOLINE',
+            car_hipass: false,
+            alternatives: false,
+            road_details: false,
+        };
+
+        try {
+            const response = await axios.post(this.kakaoCarNaviUrl, data, { headers });
+            const carTime = Math.floor(response.data.routes[0]?.summary?.duration);
+            const carDistance = response.data.routes[0]?.summary?.distance;
+
+            const walkingTime = Math.floor(carDistance / 1.29);
+
+
+            if(carDistance === undefined) {
+                return {
+                    distance: '측정 불가',
+                };
+            }
+
+            return {
+                distance: this.formatDistance(carDistance),
+                carTime: this.formatTime(carTime),
+                walkingTime: this.formatTime(walkingTime),
+            };
+        } catch (error) {
+            console.error('Error fetching travel time from Kakao API', error);
+            return {
+                car: 'N/A',
+                walk: 'N/A',
+            };
+        }
+    }
+
+    formatTime(seconds: number): string {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        return `${h > 0 ? h + '시간 ' : ''}${m > 0 ? m + '분' : ''}`.trim();
+    }
+
+    formatDistance(meters: number): string {
+        if (meters >= 1000) {
+            return (meters / 1000).toFixed(1) + 'km';
+        } else {
+            return meters + 'm';
+        }
     }
 
 }
