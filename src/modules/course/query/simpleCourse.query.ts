@@ -1,6 +1,7 @@
 import {ApiProperty} from "@nestjs/swagger";
 import {IsDateString, IsEnum, IsNotEmpty, IsString} from "class-validator";
 import {MBTI} from "../../../common/enums";
+import {DateRange} from "../../../decorator/valid.decorator";
 
 export class SimpleCourseQuery {
     @IsEnum(MBTI)
@@ -27,5 +28,6 @@ export class SimpleCourseQuery {
     })
     @IsNotEmpty()
     @IsDateString()
+    @DateRange()
     endDate: string;
 }

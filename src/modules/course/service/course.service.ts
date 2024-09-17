@@ -351,9 +351,14 @@ export class CourseService {
                     this.populateLocations(course.day1),
                     this.populateLocations(course.day2),
                     this.populateLocations(course.day3),
+                    this.populateLocations(course.day4),
+                    this.populateLocations(course.day5),
                     this.calculateTravelTimes(course.day1),
                     this.calculateTravelTimes(course.day2),
                     this.calculateTravelTimes(course.day3),
+                    this.calculateTravelTimes(course.day4),
+                    this.calculateTravelTimes(course.day5),
+
                 ])
             )
         );
@@ -410,6 +415,8 @@ export class CourseService {
             day1: [],
             day2: [],
             day3: [],
+            day4: [],
+            day5: [],
         };
 
         let placesPerDayRange;
@@ -431,17 +438,7 @@ export class CourseService {
                     startLocation = nextLocation;
                 }
 
-                switch (index) {
-                    case 0:
-                        travelCourse.day1 = dayLocations;
-                        break;
-                    case 1:
-                        travelCourse.day2 = dayLocations;
-                        break;
-                    case 2:
-                        travelCourse.day3 = dayLocations;
-                        break;
-                }
+                travelCourse[`day${index + 1}`] = dayLocations;
             })
         );
 
