@@ -20,7 +20,7 @@ export class LoggingInterceptor implements NestInterceptor {
       context: ExecutionContext,
       next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
-    if (context.switchToHttp().getRequest<Request>().url === '/health') {
+    if (context.switchToHttp().getRequest<Request>().url === '/') {
       return next.handle();
     }
 
