@@ -7,6 +7,18 @@ import {User} from "../../user/schema/user.schema";
 export type TravelCourseDocument = TravelCourse & Document;
 
 @Schema()
+export class TravelInfoToNext {
+    @Prop({ required: true })
+    distance: string;
+
+    @Prop({ required: true })
+    carTime: string;
+
+    @Prop({ required: true })
+    walkingTime: string;
+}
+
+@Schema()
 export class Location {
     @Prop({ required: true })
     name: string;
@@ -19,6 +31,9 @@ export class Location {
 
     @Prop()
     keywords?: Keyword[];
+
+    @Prop({ type: TravelInfoToNext, default: null })
+    travelInfoToNext?: TravelInfoToNext;
 
 }
 
