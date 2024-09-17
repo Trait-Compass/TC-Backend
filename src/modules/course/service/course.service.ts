@@ -473,8 +473,7 @@ export class CourseService {
             name: tour.title,
             id: tour.contentId,
             imageUrl: tour.imageUrl,
-            keywords: tour.keywords as any,
-            travelInfoToNext: null
+            keywords: tour.keywords.map(num => Keyword[num-1]),
         };
     }
 

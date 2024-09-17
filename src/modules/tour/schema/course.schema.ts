@@ -8,13 +8,13 @@ export type TravelCourseDocument = TravelCourse & Document;
 
 @Schema()
 export class TravelInfoToNext {
-    @Prop({ required: true })
+    @Prop({ required: true, default: 'N/A' })
     distance: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, default: 'N/A' })
     carTime: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, default: 'N/A' })
     walkingTime: string;
 }
 
@@ -32,9 +32,8 @@ export class Location {
     @Prop()
     keywords?: Keyword[];
 
-    @Prop({ type: TravelInfoToNext, default: null })
+    @Prop({ type: TravelInfoToNext, default: { distance: 'N/A', carTime: 'N/A', walkingTime: 'N/A' }})
     travelInfoToNext?: TravelInfoToNext;
-
 }
 
 @Schema()
