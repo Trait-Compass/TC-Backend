@@ -59,6 +59,12 @@ export class TravelCourse {
 
     @Prop({ type: [Location], default: [] })
     day3: Location[];
+
+    @Prop({ type: [Location], default: [] })
+    day4: Location[];
+
+    @Prop({ type: [Location], default: [] })
+    day5: Location[];
 }
 
 export const TravelCourseSchema = SchemaFactory.createForClass(TravelCourse);
