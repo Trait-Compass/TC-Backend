@@ -87,10 +87,14 @@ export class PhotoService {
         const items = response.data.response?.body?.items?.item;
 
         if (!items || items.length === 0) {
-            throw new HttpException('No festival found', 404);
+            return [];
         }
         return  items.map((item: { addr: any; title: any; firstimage: any; }) => {
-            return {city: item.addr, title: item.title, image: item.firstimage};
+            return {
+                city: item.addr,
+                title: item.title,
+                image: item.firstimage ?? 'http://tong.visitkorea.or.kr/cms2/website/24/2647324.jpg',
+            };
         });
     }
 
