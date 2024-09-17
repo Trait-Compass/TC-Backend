@@ -14,12 +14,6 @@ export class Tour {
     @Prop({ required: false })
     imageUrl: string;
 
-    @Prop({ required: true })
-    mapx: string;
-
-    @Prop({ required: true })
-    mapy: string;
-
     @Prop({ required: true, index: true })
     code: number;
 
@@ -28,6 +22,15 @@ export class Tour {
 
     @Prop({ type: [Number], required: true })
     keywords: number[];
+
+    @Prop({
+        type: { type: String, enum: ['Point'], required: true },
+        coordinates: { type: [Number], required: true }
+    })
+    location: {
+        type: string,
+        coordinates: [number, number] // [longitude, latitude]
+    };
 }
 
 export const TourSchema = SchemaFactory.createForClass(Tour);
@@ -35,3 +38,4 @@ export const TourSchema = SchemaFactory.createForClass(Tour);
 TourSchema.index({ contentId: 1 }, { unique: true });
 TourSchema.index({ code: 1 });
 TourSchema.index({ keywords: 1 });
+TourSchema.index({ location: '2dsphere' });

@@ -313,8 +313,8 @@ export class CourseService {
         };
 
         const data = {
-            origin: { x: startTour.mapx, y: startTour.mapy },
-            destination: { x: endTour.mapx, y: endTour.mapy },
+            origin: { x: startTour.location.coordinates[0], y: startTour.location.coordinates[1] },
+            destination: { x: endTour.location.coordinates[0], y: endTour.location.coordinates[1] },
             waypoints: [],
             priority: 'RECOMMEND',
             car_fuel: 'GASOLINE',
