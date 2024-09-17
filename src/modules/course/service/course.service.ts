@@ -2,11 +2,13 @@ import {Injectable, NotFoundException} from '@nestjs/common';
 import {SimpleCourseQuery} from "../query/simpleCourse.query";
 import {
     Category,
+    Companion,
     Keyword,
     keywordMapping,
     Location,
     locationMapping,
     MBTI,
+    mbtiKeywords,
     reverseKeywordMapping
 } from "../../../common/enums";
 import {Location as CourseLocation, TravelCourse, TravelCourseDocument} from "../../tour/schema/course.schema";
@@ -20,6 +22,7 @@ import {Model} from "mongoose";
 import {JcourseSaveQuery} from "../query/jCourse-save.query";
 import {User, UserDocument} from "../../user/schema/user.schema";
 import {PcourseSaveRequestDto} from "../dto/pCourse-save";
+import * as dayjs from 'dayjs';
 import axios from "axios";
 
 @Injectable()
@@ -37,7 +40,7 @@ export class CourseService {
         const mappedCodeList = await this.getRandomCodeMappings();
         return await this.photoService.getFestivalPhotoList();
     }
-    // TODO 로직 적용
+
     async getBestCourse(): Promise<PhotoDto[]> {
         const mappedLocationCategoryList = await this.getMappedLocationsAndCategories()
         const dataArrays = await Promise.all(Object.entries(mappedLocationCategoryList).map(async ([location, category]) => {
@@ -112,12 +115,12 @@ export class CourseService {
     }
 
     async getPcourse(pcourseQuery: PcourseQuery): Promise<TravelCourse[]> {
-        return this.findPCourses(pcourseQuery.location);
+        return this.findPCourses(pcourseQuery);
     }
 
     // TODO 임시 로직
     async getJcourse(jcourseQuery: JcourseQuery): Promise<TravelCourse[]> {
-        return this.findPCourses(jcourseQuery.location);
+        return this.findPCourses(jcourseQuery);
     }
 
     async findCourses(): Promise<TravelCourse[]> {
@@ -139,27 +142,6 @@ export class CourseService {
         return randomCourses;
     }
 
-    async findPCourses(location: Location): Promise<TravelCourse[]> {
-        const courses = await this.travelCourseModel.find({ region: location }).exec();
-        const randomCourses = courses.slice(0, 4);
-
-        for (const course of randomCourses) {
-            await Promise.all([
-                this.populateLocations(course.day1),
-                this.populateLocations(course.day2),
-                this.populateLocations(course.day3),
-            ]);
-
-            await Promise.all([
-                this.calculateTravelTimes(course.day1),
-                this.calculateTravelTimes(course.day2),
-                this.calculateTravelTimes(course.day3),
-            ]);
-        }
-
-        return randomCourses;
-    }
-
     async findByCode(code: number): Promise<Tour[]> {
         return this.tourModel.find({ code }).exec();
     }
@@ -173,19 +155,15 @@ export class CourseService {
     }
 
     private async populateLocations(locations: CourseLocation[]): Promise<void> {
-        for (const location of locations) {
-            const tour = await this.tourModel.findOne({ contentId: location.id }).exec();
-            if (tour) {
-                if (tour.imageUrl) {
-                    location.imageUrl = tour.imageUrl;
-                } else {
-                    location.imageUrl = await this.photoService.getPhoto(tour.title);
-                }
-                if (tour.keywords) {
+        await Promise.all(
+            locations.map(async (location) => {
+                const tour = await this.tourModel.findOne({ contentId: location.id }).exec();
+                if (tour) {
+                    location.imageUrl = tour.imageUrl || await this.photoService.getPhoto(tour.title);
                     location.keywords = tour.keywords.map(keywordNumber => reverseKeywordMapping[keywordNumber]);
                 }
-            }
-        }
+            })
+        );
     }
 
     async saveJcourse(query: JcourseSaveQuery, userId): Promise<boolean> {
@@ -291,12 +269,12 @@ export class CourseService {
     private async calculateTravelTimes(locations: CourseLocation[]): Promise<void> {
         if (locations.length < 2) return;
 
-        for (let i = 0; i < locations.length - 1; i++) {
-            const start = locations[i];
-            const end = locations[i + 1];
-
-            start.travelInfoToNext = await this.getTravelTimeBetweenLocations(start, end);
-        }
+        await Promise.all(
+            locations.slice(0, -1).map(async (start, i) => {
+                const end = locations[i + 1];
+                start.travelInfoToNext = await this.getTravelTimeBetweenLocations(start, end);
+            })
+        );
     }
 
     private async getTravelTimeBetweenLocations(start: CourseLocation, end: CourseLocation): Promise<any> {
@@ -369,4 +347,164 @@ export class CourseService {
         }
     }
 
+    async findPCourses(pcourseQuery: PcourseQuery): Promise<TravelCourse[]> {
+
+        const start = dayjs(pcourseQuery.startDate);
+        const end = dayjs(pcourseQuery.endDate);
+        const totalDays = end.diff(start, 'day');
+
+        const existingCourses = await this.travelCourseModel
+            .find({ region: pcourseQuery.location })
+            .lean()
+            .exec() as TravelCourse[];
+
+        let randomCourses = existingCourses.slice(0, 4);
+
+        if (randomCourses.length < 4) {
+            const coursesToGenerate = 4 - randomCourses.length;
+
+            const newCourses = await Promise.all(
+                Array(coursesToGenerate).fill(null).map(() => this.generateTravelCourse(pcourseQuery)
+            ));
+
+            randomCourses = [...randomCourses, ...newCourses];
+        }
+
+        for (const course of randomCourses) {
+            await Promise.all([
+                this.populateLocations(course.day1),
+                this.populateLocations(course.day2),
+                this.populateLocations(course.day3),
+                this.calculateTravelTimes(course.day1),
+                this.calculateTravelTimes(course.day2),
+                this.calculateTravelTimes(course.day3),
+            ]);
+        }
+        return randomCourses;
+    }
+
+    private async generateTravelCourse(query: PcourseQuery): Promise<TravelCourse> {
+
+        const start = dayjs(query.startDate);
+        const end = dayjs(query.endDate);
+        const totalDays = end.diff(start, 'day')+1;
+
+        const matchingTours = await this.tourModel.find({
+            code: locationMapping[query.location],
+            keywords: { $in: mbtiKeywords[query.mbti] }
+        }).lean().exec();
+
+        const startingLocations = this.pickRandomTours(matchingTours, totalDays);
+
+        return await this.buildTravelCourse(startingLocations, query, totalDays);
+    }
+
+    private async buildTravelCourse(startingLocations: Tour[], query: PcourseQuery, totalDays: number): Promise<TravelCourse> {
+        const travelCourse: TravelCourse = {
+            region: query.location,
+            courseName: `${query.location} ${this.getDurationText(totalDays)} 여행 코스`,
+            duration: this.getDurationText(totalDays),
+            day1: [],
+            day2: [],
+            day3: [],
+        };
+
+        const placesPerDayRange = this.getPlacesPerDayRange(query.companion);
+
+        await Promise.all(
+            startingLocations.map(async (startLocation, index) => {
+                const dayLocations = [this.mapTourToLocation(startLocation)];
+                const placeCount = this.getRandomPlacesCount(placesPerDayRange);
+
+                for (let j = 0; j < placeCount - 1; j++) {
+                    const nearbyLocations = await this.findNearbyLocations(startLocation.location.coordinates, 10000, startLocation.contentId);
+                    const nextLocation = this.shuffleArray(nearbyLocations).slice(0, 1)[0];
+                    dayLocations.push(this.mapTourToLocation(nextLocation));
+                    startLocation = nextLocation;
+                }
+
+                switch (index) {
+                    case 0:
+                        travelCourse.day1 = dayLocations;
+                        break;
+                    case 1:
+                        travelCourse.day2 = dayLocations;
+                        break;
+                    case 2:
+                        travelCourse.day3 = dayLocations;
+                        break;
+                }
+            })
+        );
+
+        return travelCourse;
+    }
+
+    private getDurationText(totalDays: number): string {
+        const durationTextMap = {
+            0: '당일치기',
+            1: '1박 2일',
+            2: '2박 3일',
+            3: '3박 4일'
+        };
+        return durationTextMap[totalDays] || `${totalDays}일`;
+    }
+
+    private getPlacesPerDayRange(companion: Companion): [number, number] {
+        switch (companion) {
+            case Companion.ALONE:
+            case Companion.FRIEND:
+            case Companion.FRIENDS:
+                return [2, 3];
+            case Companion.COUPLE:
+            case Companion.WITH_CHILD:
+            case Companion.WITH_PARENTS:
+                return [1, 2];
+            default:
+                return [1, 2];
+        }
+    }
+
+    private getRandomPlacesCount(range: [number, number]): number {
+        return Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+    }
+
+
+    private mapTourToLocation(tour: Tour): CourseLocation {
+        return {
+            name: tour.title,
+            id: tour.contentId,
+            imageUrl: tour.imageUrl,
+            keywords: tour.keywords as any,
+            travelInfoToNext: null
+        };
+    }
+
+    private async findNearbyLocations(startLocation: [number, number], maxDistanceInMeters: number, excludeId: number): Promise<Tour[]> {
+        return await this.tourModel.find({
+            location: {
+                $near: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: startLocation
+                    },
+                    $maxDistance: maxDistanceInMeters,
+                }
+            },
+            contentId: { $ne: excludeId }
+        }).lean().exec();
+    }
+
+    private pickRandomTours(tours: Tour[], totalDays: number): Tour[] {
+        const shuffledTours = tours.sort(() => 0.5 - Math.random());
+        return shuffledTours.slice(0, totalDays);
+    }
+
+    private shuffleArray<T>(array: T[]): T[] {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
 }
