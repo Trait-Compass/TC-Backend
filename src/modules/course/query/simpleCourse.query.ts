@@ -23,7 +23,7 @@ export class SimpleCourseQuery {
 
     @ApiProperty({
         description: '여행 마지막 날짜',
-        example: '2024-12-18T17:34:02.666Z',
+        example: '2024-09-19T17:34:02.666Z',
     })
     @IsNotEmpty()
     @IsDateString()
