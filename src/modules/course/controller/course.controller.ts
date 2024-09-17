@@ -5,7 +5,6 @@ import {SimpleCourseQuery} from "../query/simpleCourse.query";
 import {PhotoDto} from "../../photo/course/dto/photo.dto";
 import {PcourseQuery} from "../query/pCourse.query";
 import {JcourseQuery} from "../query/jCourse.query";
-import {Tour} from "../../tour/schema/tour.schema";
 import {TravelCourse} from "../../tour/schema/course.schema";
 import {UserAuthGuard} from "../../guards/auth.guard";
 import {TcUser} from "../../../decorator/user.decorator";
@@ -61,7 +60,7 @@ export class CourseController {
     @UseGuards(UserAuthGuard)
     @ApiOperation({summary : '여행 일정: J형 코스 저장 API' })
     @Post('/j')
-    async savzJcourse(
+    async saveJcourse(
         @Query() query: JcourseSaveQuery,
         @TcUser() userDetail: UserDetail
     ): Promise<boolean> {
