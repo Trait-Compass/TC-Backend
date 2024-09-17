@@ -115,12 +115,12 @@ export class CourseService {
     }
 
     async getPcourse(pcourseQuery: PcourseQuery): Promise<TravelCourse[]> {
-        return this.findPCourses(pcourseQuery);
+        return this.createCourses(pcourseQuery);
     }
 
     // TODO 임시 로직
     async getJcourse(jcourseQuery: JcourseQuery): Promise<TravelCourse[]> {
-        return this.findPCourses(jcourseQuery);
+        return this.createCourses(jcourseQuery);
     }
 
     async findCourses(): Promise<TravelCourse[]> {
@@ -347,14 +347,17 @@ export class CourseService {
         }
     }
 
-    async findPCourses(pcourseQuery: PcourseQuery): Promise<TravelCourse[]> {
+    async createCourses(query: PcourseQuery | JcourseQuery): Promise<TravelCourse[]> {
 
-        const start = dayjs(pcourseQuery.startDate);
-        const end = dayjs(pcourseQuery.endDate);
-        const totalDays = end.diff(start, 'day');
+        const start = dayjs(query.startDate);
+        const end = dayjs(query.endDate);
+        const totalDays = end.diff(start, 'day') + 1;
 
         const existingCourses = await this.travelCourseModel
-            .find({ region: pcourseQuery.location })
+            .find({
+                region: query.location,
+                duration: this.getDurationText(totalDays),
+            })
             .lean()
             .exec() as TravelCourse[];
 
@@ -364,40 +367,49 @@ export class CourseService {
             const coursesToGenerate = 4 - randomCourses.length;
 
             const newCourses = await Promise.all(
-                Array(coursesToGenerate).fill(null).map(() => this.generateTravelCourse(pcourseQuery)
-            ));
+                Array(coursesToGenerate).fill(null).map(() => this.generateTravelCourse(query, totalDays))
+            );
 
             randomCourses = [...randomCourses, ...newCourses];
         }
 
-        for (const course of randomCourses) {
-            await Promise.all([
-                this.populateLocations(course.day1),
-                this.populateLocations(course.day2),
-                this.populateLocations(course.day3),
-                this.calculateTravelTimes(course.day1),
-                this.calculateTravelTimes(course.day2),
-                this.calculateTravelTimes(course.day3),
-            ]);
-        }
+        await Promise.all(
+            randomCourses.map(course =>
+                Promise.all([
+                    this.populateLocations(course.day1),
+                    this.populateLocations(course.day2),
+                    this.populateLocations(course.day3),
+                    this.calculateTravelTimes(course.day1),
+                    this.calculateTravelTimes(course.day2),
+                    this.calculateTravelTimes(course.day3),
+                ])
+            )
+        );
+
         return randomCourses;
     }
 
-    private async generateTravelCourse(query: PcourseQuery): Promise<TravelCourse> {
 
-        const start = dayjs(query.startDate);
-        const end = dayjs(query.endDate);
-        const totalDays = end.diff(start, 'day')+1;
+    private async generateTravelCourse(query: PcourseQuery | JcourseQuery, totalDays: number): Promise<TravelCourse> {
+        let matchingTours: Tour[];
 
-        const matchingTours = await this.tourModel.find({
-            code: locationMapping[query.location],
-            keywords: { $in: mbtiKeywords[query.mbti] }
-        }).lean().exec();
+        if ('keyword' in query) {
+            matchingTours = await this.tourModel.find({
+                code: locationMapping[query.location],
+                keywords: { $in: query.keyword.map(kw => keywordMapping[kw]) }
+            }).lean().exec();
+        } else {
+            matchingTours = await this.tourModel.find({
+                code: locationMapping[query.location],
+                keywords: { $in: mbtiKeywords[query.mbti] }
+            }).lean().exec();
+        }
 
         const startingLocations = this.pickRandomTours(matchingTours, totalDays);
 
-        return await this.buildTravelCourse(startingLocations, query, totalDays);
+        return this.buildTravelCourse(startingLocations, query, totalDays);
     }
+
 
     private async buildTravelCourse(startingLocations: Tour[], query: PcourseQuery, totalDays: number): Promise<TravelCourse> {
         const travelCourse: TravelCourse = {
@@ -441,13 +453,10 @@ export class CourseService {
     }
 
     private getDurationText(totalDays: number): string {
-        const durationTextMap = {
-            0: '당일치기',
-            1: '1박 2일',
-            2: '2박 3일',
-            3: '3박 4일'
-        };
-        return durationTextMap[totalDays] || `${totalDays}일`;
+        if (totalDays === 1) {
+            return '당일치기';
+        }
+        return `${totalDays - 1}박 ${totalDays}일`;
     }
 
     private getPlacesPerDayRange(companion: Companion): [number, number] {
