@@ -6,10 +6,12 @@ import { v4 as uuidv4 } from 'uuid';
 import {Inject, NotFoundException} from "@nestjs/common";
 import {S3} from "@aws-sdk/client-s3";
 import {GptService} from "../gpt/gpt.service";
+import {User, UserDocument} from "../user/schema/user.schema";
 
 export class DiaryService {
     constructor(
         @InjectModel(Diary.name) private diaryModel: Model<DiaryDocument>,
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
         @Inject(S3) private readonly s3: S3,
         @Inject() private readonly gptService: GptService,
     ) {}
@@ -59,7 +61,10 @@ export class DiaryService {
             finalThoughts: diaryRequest.finalThoughts,
         });
 
-        await newDiary.save();
+        const saveDiary = await newDiary.save();
+        const user = await this.userModel.findById(userId).exec();
+        user.diaries.push(saveDiary.id);
+        await user.save();
     }
 
     async getDiaryList(userId: string): Promise<Diary[]> {
