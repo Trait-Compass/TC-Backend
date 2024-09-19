@@ -192,6 +192,30 @@ export class CourseService {
             })
         );
 
+        const day4Locations = await Promise.all(
+            (body.day4 || []).map(async (location) => {
+                const tour = await findTourByContentId(location.contentId);
+                return {
+                    name: tour?.title || 'Unknown Location',
+                    id: location.contentId,
+                    imageUrl: tour?.imageUrl || null,
+                    keywords: tour?.keywords || [],
+                };
+            })
+        );
+
+        const day5Locations = await Promise.all(
+            (body.day5 || []).map(async (location) => {
+                const tour = await findTourByContentId(location.contentId);
+                return {
+                    name: tour?.title || 'Unknown Location',
+                    id: location.contentId,
+                    imageUrl: tour?.imageUrl || null,
+                    keywords: tour?.keywords || [],
+                };
+            })
+        );
+
         const travelCourse = new this.travelCourseModel({
             user: user._id,
             region: body.region,
@@ -200,6 +224,9 @@ export class CourseService {
             day1: day1Locations,
             day2: day2Locations,
             day3: day3Locations,
+            day4: day4Locations,
+            day5: day5Locations,
+
         });
 
         await travelCourse.save();

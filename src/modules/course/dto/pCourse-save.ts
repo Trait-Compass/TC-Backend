@@ -58,4 +58,20 @@ export class PcourseSaveRequestDto {
         type: [LocationDto],
     })
     day3?: LocationDto[];
+
+    @IsArray()
+    @IsOptional()
+    @Type(() => LocationDto)
+    @ApiPropertyOptional({
+        type: [LocationDto],
+    })
+    day4?: LocationDto[];
+
+    @IsArray()
+    @IsOptional()
+    @Type(() => LocationDto)
+    @ApiPropertyOptional({
+        type: [LocationDto],
+    })
+    day5?: LocationDto[];
 }

@@ -58,7 +58,7 @@ export class CourseController {
     }
 
     @UseGuards(UserAuthGuard)
-    @ApiOperation({summary : '여행 일정: J형 코스 저장 API' })
+    @ApiOperation({summary : '여행 일정: J,P AI 추천 코스 저장 API' })
     @Post('/j')
     async saveJcourse(
         @Query() query: JcourseSaveQuery,
