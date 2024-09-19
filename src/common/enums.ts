@@ -82,6 +82,12 @@ export const locationMapping: Record<Location, number> = {
     [Location.합천군]: 21
 };
 
+export const reverseLocationMapping: Record<number, Location> = {};
+
+for (const [key, value] of Object.entries(locationMapping)) {
+    reverseLocationMapping[value] = key as Location;
+}
+
 export enum Companion {
     ALONE = "혼자",
     COUPLE = "커플",
