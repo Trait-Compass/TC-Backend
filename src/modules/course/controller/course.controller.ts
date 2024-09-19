@@ -9,8 +9,8 @@ import {TravelCourse} from "../../tour/schema/course.schema";
 import {UserAuthGuard} from "../../guards/auth.guard";
 import {TcUser} from "../../../decorator/user.decorator";
 import {UserDetail} from "../../auth/user";
-import {JcourseSaveQuery} from "../query/jCourse-save.query";
-import {PcourseSaveRequestDto} from "../dto/pCourse-save";
+import {AIcourseSaveQuery} from "../query/AIcourse.save.query";
+import {JcourseSaveRequestDto} from "../dto/pCourse-save";
 
 @Controller('/course')
 @ApiTags('Course')
@@ -60,21 +60,21 @@ export class CourseController {
     @UseGuards(UserAuthGuard)
     @ApiOperation({summary : '여행 일정: J,P AI 추천 코스 저장 API' })
     @Post('/j')
-    async saveJcourse(
-        @Query() query: JcourseSaveQuery,
+    async saveAIcourse(
+        @Query() query: AIcourseSaveQuery,
         @TcUser() userDetail: UserDetail
     ): Promise<boolean> {
-        return await this.courseService.saveJcourse(query,userDetail.userId);
+        return await this.courseService.saveAIcourse(query,userDetail.userId);
     }
 
     @UseGuards(UserAuthGuard)
-    @ApiOperation({summary : '여행 일정: P형 코스 저장 API' })
-    @Post('/p')
-    async savePcourse(
-        @Body() body: PcourseSaveRequestDto,
+    @ApiOperation({summary : '여행 일정: J형 코스 저장 API' })
+    @Post('/j')
+    async saveJcourse(
+        @Body() body: JcourseSaveRequestDto,
         @TcUser() userDetail: UserDetail
     ): Promise<boolean> {
-        return await this.courseService.savePcourse(body,userDetail.userId);
+        return await this.courseService.saveJcourse(body,userDetail.userId);
     }
 
     @UseGuards(UserAuthGuard)

@@ -12,28 +12,13 @@ export class LocationDto {
     contentId: number;
 }
 
-export class PcourseSaveRequestDto {
-    @IsString()
+export class JcourseSaveRequestDto {
+    @IsNumber()
     @ApiProperty({
-        description: '여행하는 시,군',
-        example: '마산',
+        description: '여행하는 시,군 코드',
+        example: '6',
     })
-    region: string;
-
-    @IsString()
-    @ApiProperty({
-        description: '코스 이름',
-        example: '마산 투어',
-    })
-    courseName: string;
-
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty({
-        description: '기간',
-        example: '2박3일',
-    })
-    duration: string;
+    code: number;
 
     @IsArray()
     @IsOptional()

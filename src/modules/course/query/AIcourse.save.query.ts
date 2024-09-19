@@ -1,7 +1,7 @@
 import {ApiProperty} from "@nestjs/swagger";
 import {IsNotEmpty, IsString} from "class-validator";
 
-export class JcourseSaveQuery {
+export class AIcourseSaveQuery {
     @IsString()
     @ApiProperty({
         description: '코스 아이디',
