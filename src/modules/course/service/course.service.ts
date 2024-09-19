@@ -7,7 +7,7 @@ import {
     Location,
     locationMapping, MBTI,
     mbtiKeywords,
-    reverseKeywordMapping
+    reverseKeywordMapping, reverseLocationMapping
 } from "../../../common/enums";
 import {Location as CourseLocation, TravelCourse, TravelCourseDocument} from "../../tour/schema/course.schema";
 import {PhotoService} from "../../photo/course/service/photo.service";
@@ -17,9 +17,9 @@ import {JcourseQuery} from "../query/jCourse.query";
 import {Tour, TourDocument} from "../../tour/schema/tour.schema";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
-import {JcourseSaveQuery} from "../query/jCourse-save.query";
+import {AIcourseSaveQuery} from "../query/AIcourse.save.query";
 import {User, UserDocument} from "../../user/schema/user.schema";
-import {PcourseSaveRequestDto} from "../dto/pCourse-save";
+import {JcourseSaveRequestDto} from "../dto/pCourse-save";
 import * as dayjs from 'dayjs';
 import axios from "axios";
 import {GptService} from "../../gpt/gpt.service";
@@ -124,7 +124,7 @@ export class CourseService {
         );
     }
 
-    async saveJcourse(query: JcourseSaveQuery, userId): Promise<boolean> {
+    async saveAIcourse(query: AIcourseSaveQuery, userId): Promise<boolean> {
         const travelCourse = await this.travelCourseModel.findById(query.id).exec();
 
         if (!travelCourse) {
@@ -145,88 +145,62 @@ export class CourseService {
         return true;
     }
 
-    async savePcourse(body: PcourseSaveRequestDto, userId: string): Promise<boolean> {
+    async saveJcourse(body: JcourseSaveRequestDto, userId: string): Promise<boolean> {
         const user = await this.userModel.findById(userId).exec();
 
-        const findTourByContentId = async (contentId: number) => {
-            const tour = await this.tourModel.findOne({ contentId }).exec();
-            if (!tour) {
-                console.warn(`Tour with contentId ${contentId} not found`);
-            }
-            return tour;
-        };
+        const day1Locations = await this.getLocationsForDay(body.day1);
+        const day2Locations = await this.getLocationsForDay(body.day2);
+        const day3Locations = await this.getLocationsForDay(body.day3);
+        const day4Locations = await this.getLocationsForDay(body.day4);
+        const day5Locations = await this.getLocationsForDay(body.day5);
 
-        const day1Locations = await Promise.all(
-            (body.day1 || []).map(async (location) => {
-                const tour = await findTourByContentId(location.contentId);
-                return {
-                    name: tour?.title || 'Unknown Location',
-                    id: location.contentId,
-                    imageUrl: tour?.imageUrl || null,
-                    keywords: tour?.keywords || [],
-                };
-            })
-        );
+        const durationDays = [day1Locations, day2Locations, day3Locations, day4Locations, day5Locations].filter(
+            (day) => day.length > 0
+        ).length;
 
-        const day2Locations = await Promise.all(
-            (body.day2 || []).map(async (location) => {
-                const tour = await findTourByContentId(location.contentId);
-                return {
-                    name: tour?.title || 'Unknown Location',
-                    id: location.contentId,
-                    imageUrl: tour?.imageUrl || null,
-                    keywords: tour?.keywords || [],
-                };
-            })
-        );
+        let duration: string;
+        switch (durationDays) {
+            case 1:
+                duration = '당일치기';
+                break;
+            case 2:
+                duration = '1박 2일';
+                break;
+            case 3:
+                duration = '2박 3일';
+                break;
+            case 4:
+                duration = '3박 4일';
+                break;
+            case 5:
+                duration = '4박 5일';
+                break;
+            default:
+                duration = 'Unknown Duration';
+        }
 
-        const day3Locations = await Promise.all(
-            (body.day3 || []).map(async (location) => {
-                const tour = await findTourByContentId(location.contentId);
-                return {
-                    name: tour?.title || 'Unknown Location',
-                    id: location.contentId,
-                    imageUrl: tour?.imageUrl || null,
-                    keywords: tour?.keywords || [],
-                };
-            })
-        );
+        const allKeywords = [
+            ...day1Locations.flatMap((location) => location.keywords),
+            ...day2Locations.flatMap((location) => location.keywords),
+            ...day3Locations.flatMap((location) => location.keywords),
+            ...day4Locations.flatMap((location) => location.keywords),
+            ...day5Locations.flatMap((location) => location.keywords),
+        ];
 
-        const day4Locations = await Promise.all(
-            (body.day4 || []).map(async (location) => {
-                const tour = await findTourByContentId(location.contentId);
-                return {
-                    name: tour?.title || 'Unknown Location',
-                    id: location.contentId,
-                    imageUrl: tour?.imageUrl || null,
-                    keywords: tour?.keywords || [],
-                };
-            })
-        );
+        const keywordsStringList = allKeywords.join(', ');
 
-        const day5Locations = await Promise.all(
-            (body.day5 || []).map(async (location) => {
-                const tour = await findTourByContentId(location.contentId);
-                return {
-                    name: tour?.title || 'Unknown Location',
-                    id: location.contentId,
-                    imageUrl: tour?.imageUrl || null,
-                    keywords: tour?.keywords || [],
-                };
-            })
-        );
+        const courseName = await this.gptService.generateCourseNameFromKeywords(keywordsStringList);
 
         const travelCourse = new this.travelCourseModel({
-            user: user._id,
-            region: body.region,
-            courseName: body.courseName,
-            duration: body.duration,
+            user: user.id,
+            region: reverseLocationMapping[body.code],
+            courseName,
+            duration,
             day1: day1Locations,
             day2: day2Locations,
             day3: day3Locations,
             day4: day4Locations,
             day5: day5Locations,
-
         });
 
         await travelCourse.save();
@@ -250,6 +224,29 @@ export class CourseService {
 
         return user.courses as unknown as TravelCourse[];
     }
+
+    async findTourByContentId(contentId: number): Promise<Tour | null> {
+        const tour = await this.tourModel.findOne({ contentId }).exec();
+        if (!tour) {
+            console.warn(`Tour with contentId ${contentId} not found`);
+        }
+        return tour;
+    }
+
+    async getLocationsForDay(dayLocations: Array<{ contentId: number }>): Promise<Array<{ name: string; id: number; imageUrl: string | null; keywords: number[] }>> {
+        return Promise.all(
+            (dayLocations || []).map(async (location) => {
+                const tour = await this.findTourByContentId(location.contentId);
+                return {
+                    name: tour?.title || 'Unknown Location',
+                    id: location.contentId,
+                    imageUrl: tour?.imageUrl || null,
+                    keywords: tour?.keywords || [],
+                };
+            })
+        );
+    }
+
 
     private async calculateTravelTimes(locations: CourseLocation[]): Promise<void> {
         if (locations.length < 2) return;
