@@ -9,6 +9,7 @@ import {Model} from "mongoose";
 import {MBTI, mbtiDescriptions, mbtiMatchups} from "../../../common/enums";
 import {UserProfileResponse} from "../dto/response/profile.response";
 import {EMPTY} from "rxjs";
+import {PatchProfileQuery} from "../query/profile-patch.query";
 
 @Injectable()
 export class UserService {
@@ -70,7 +71,7 @@ export class UserService {
     }
 
     async patchMbti(mbti: MBTI, id: string): Promise<void> {
-        const user = await this.userModel.findById(id).exec(); // Pass `id` directly as a string
+        const user = await this.userModel.findById(id).exec();
         user.mbti = mbti;
         await user.save();
     }
@@ -82,5 +83,12 @@ export class UserService {
         }
         return {nickname: user.nickname, mbti: user.mbti, mbtiDescription: mbtiDescriptions[user.mbti], mbtiMatchups: mbtiMatchups[user.mbti]};
 
+    }
+
+    async patchProfile(userid: string, query: PatchProfileQuery): Promise<void> {
+        const user = await this.userModel.findById(userid).exec();
+        user.mbti = query.mbti;
+        user.nickname = query.nickname;
+        await user.save();
     }
 }

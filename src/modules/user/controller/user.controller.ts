@@ -13,6 +13,7 @@ import {UserAuthGuard} from "../../guards/auth.guard";
 import {UserDetail} from "../../auth/user";
 import {TcUser} from "../../../decorator/user.decorator";
 import {UserProfileResponse} from "../dto/response/profile.response";
+import {PatchProfileQuery} from "../query/profile-patch.query";
 
 @Controller('/user')
 @ApiTags('User')
@@ -74,5 +75,15 @@ export class UserController {
         @TcUser() userDetail: UserDetail,
     ): Promise<UserProfileResponse> {
         return await this.userService.getProfile(userDetail.userId);
+    }
+
+    @ApiOperation({summary : '유저 프로파일 API' })
+    @UseGuards(UserAuthGuard)
+    @Patch('/profile')
+    async patchProfile(
+        @Query() query: PatchProfileQuery,
+        @TcUser() userDetail: UserDetail,
+    ) {
+        return await this.userService.patchProfile(userDetail.userId, query);
     }
 }
