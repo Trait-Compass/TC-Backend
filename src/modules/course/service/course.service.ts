@@ -58,7 +58,7 @@ export class CourseService {
 
     private async mapCourseToPhotoDto(course: TravelCourse): Promise<PhotoDto> {
         return {
-            mbti: this.findFirstMbtiForKeyword(course.day1[0].keywords[0]),
+            mbti: course.day1[0].keywords?.[0] ? this.findFirstMbtiForKeyword(course.day1[0].keywords?.[0]) : MBTI.ENFP,
             city: course.region,
             title: course.courseName,
             image: course.day1[0]?.imageUrl || await this.photoService.getPhoto(course.day1[0].name),
@@ -71,7 +71,7 @@ export class CourseService {
                 return mbti as MBTI;
             }
         }
-        return null;
+        return MBTI.ENFP;
     }
 
 
