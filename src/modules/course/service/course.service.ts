@@ -57,13 +57,33 @@ export class CourseService {
     }
 
     private async mapCourseToPhotoDto(course: TravelCourse): Promise<PhotoDto> {
+        if (!course.day1 || course.day1.length === 0) {
+            return {
+                mbti: MBTI.ENFP,
+                city: course.region,
+                title: course.courseName,
+                image: await this.photoService.getPhoto(course.courseName),
+            };
+        }
+
+        const firstLocation = course.day1[0];
+        if (!firstLocation.keywords || firstLocation.keywords.length === 0) {
+            return {
+                mbti: MBTI.ENFP,
+                city: course.region,
+                title: course.courseName,
+                image: firstLocation.imageUrl || await this.photoService.getPhoto(firstLocation.name),
+            };
+        }
+
         return {
-            mbti: course.day1[0].keywords?.[0] ? this.findFirstMbtiForKeyword(course.day1[0].keywords?.[0]) : MBTI.ENFP,
+            mbti: this.findFirstMbtiForKeyword(firstLocation.keywords[0]) || MBTI.ENFP,
             city: course.region,
             title: course.courseName,
-            image: course.day1[0]?.imageUrl || await this.photoService.getPhoto(course.day1[0].name),
+            image: firstLocation.imageUrl || await this.photoService.getPhoto(firstLocation.name),
         };
     }
+
 
     private findFirstMbtiForKeyword(keyword: Keyword): MBTI {
         for (const mbti of Object.keys(mbtiKeywords)) {
