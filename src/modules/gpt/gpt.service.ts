@@ -45,7 +45,7 @@ export class GptService {
           {
             role: 'user',
             content: [
-              { type: 'text', text: `여행지 코스 키워드: ${keywords}. 키워드를 통해 코스가 어떤 분위기인지 나타내는 코스 이름을 다른 설명 없고 양 끝에 따음표 없이 반환해줘.` },
+              { type: 'text', text: `여행지 코스 키워드: ${keywords}. 코스 분위기를 나타내는 이름을 키워드를 통해 생성해줘. 이름 외의 설명은 없으며, 결과는 10글자 이내로 반환해줘.` },
             ],
           },
         ],
