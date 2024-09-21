@@ -138,7 +138,7 @@ export class CourseService {
                 const tour = await this.tourModel.findOne({ contentId: location.id }).exec();
                 if (tour) {
                     location.imageUrl = tour.imageUrl || await this.photoService.getPhoto(tour.title);
-                    location.keywords = tour.keywords.map(keywordNumber => reverseKeywordMapping[keywordNumber]);
+                    location.keywords = tour.keywords?.map(keywordNumber => reverseKeywordMapping[keywordNumber]) || [];
                 }
             })
         );
