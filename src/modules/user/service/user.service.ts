@@ -91,4 +91,8 @@ export class UserService {
         user.nickname = query.nickname;
         await user.save();
     }
+
+    async deleteUser(userid: string): Promise<void> {
+        await this.userModel.findByIdAndDelete(userid).exec();
+    }
 }

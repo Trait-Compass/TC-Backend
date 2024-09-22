@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe} from '@nestjs/common';
 import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import {UserService} from "../service/user.service";
 import {SignupRequest} from "../dto/request/signup.request";
@@ -85,5 +85,14 @@ export class UserController {
         @TcUser() userDetail: UserDetail,
     ) {
         return await this.userService.patchProfile(userDetail.userId, query);
+    }
+
+    @ApiOperation({summary : '탈퇴 API' })
+    @UseGuards(UserAuthGuard)
+    @Delete()
+    async deleteUser(
+        @TcUser() userDetail: UserDetail,
+    ) {
+        return await this.userService.deleteUser(userDetail.userId);
     }
 }
