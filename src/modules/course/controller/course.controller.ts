@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post, Query, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Query, UseGuards} from '@nestjs/common';
 import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import {CourseService} from "../service/course.service";
 import {SimpleCourseQuery} from "../query/simpleCourse.query";
@@ -11,6 +11,7 @@ import {TcUser} from "../../../decorator/user.decorator";
 import {UserDetail} from "../../auth/user";
 import {AIcourseSaveQuery} from "../query/AIcourse.save.query";
 import {JcourseSaveRequestDto} from "../dto/pCourse-save";
+import {MyCourseQuery} from "../query/myCourse.query";
 
 @Controller('/course')
 @ApiTags('Course')
@@ -84,5 +85,15 @@ export class CourseController {
         @TcUser() userDetail: UserDetail
     ): Promise<TravelCourse[]> {
         return await this.courseService.getMycourses(userDetail.userId);
+    }
+
+    @UseGuards(UserAuthGuard)
+    @ApiOperation({summary : '마이페이지: 코스 조회 API' })
+    @Get('/my/:id')
+    async getMycourse(
+        @Param('id') id: string,
+        @TcUser() userDetail: UserDetail
+    ): Promise<TravelCourse[]> {
+        return await this.courseService.getMycourse(userDetail.userId, id);
     }
 }
