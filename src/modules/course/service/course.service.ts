@@ -218,11 +218,45 @@ export class CourseService {
             .findById(id)
             .populate({
                 path: 'courses',
-                model: 'TravelCourse'
+                model: 'TravelCourse',
+                select: '-day1 -day2 -day3 -day4 -day5'
             })
+            .lean()
             .exec();
 
         return user.courses as unknown as TravelCourse[];
+    }
+
+    async getMycourse(userId: string, courseId: string): Promise<TravelCourse[]>{
+        const user = await this.userModel
+            .findById(userId)
+            .populate({
+                path: 'courses',
+                model: 'TravelCourse',
+                match: { _id: courseId }
+            })
+            .lean()
+            .exec();
+
+        if (!user.courses || !Array.isArray(user.courses)) {
+            throw new Error('Courses not found for this user');
+        }
+
+        await Promise.all(
+            (user.courses as unknown as TravelCourse[]).map(course =>
+                Promise.all(
+                    Object.keys(course)
+                        .filter(key => key.startsWith('day') && Array.isArray(course[key]) && course[key].length > 0)
+                        .map(dayKey =>
+                            Promise.all([
+                                this.populateLocations(course[dayKey]),
+                                this.calculateTravelTimes(course[dayKey]),
+                            ])
+                        )
+                )
+            )
+        );
+        return user.courses as unknown as TravelCourse[]
     }
 
     async findTourByContentId(contentId: number): Promise<Tour | null> {
